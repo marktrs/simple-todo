@@ -37,14 +37,13 @@ func main() {
 	file, err := os.OpenFile(logFileDir, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
-		file.Close()
 	}
+
 	defer func() {
 		if err := file.Close(); err != nil {
 			log.Panic(err)
 		}
 	}()
-
 
 	// Setup middleware
 	app.Use(requestid.New())
@@ -74,7 +73,7 @@ func main() {
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM) // When an interrupt or termination signal is sent, notify the channel
 
 	// This blocks the main thread until an interrupt is received
-	_ = <-c
+	<-c
 	log.Print("gracefully shutting down...")
 
 	if err := app.Shutdown(); err != nil {
@@ -86,7 +85,6 @@ func main() {
 
 	log.Print("server was successful shutdown.")
 }
-
 
 func cleanup() {
 	// Close the database connection
