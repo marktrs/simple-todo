@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/marktrs/simple-todo/handler"
+	"github.com/marktrs/simple-todo/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
@@ -23,4 +24,12 @@ func SetupRoutes(app *fiber.App) {
 	// User
 	user := api.Group("/users")
 	user.Post("/", handler.CreateUser)
+
+	// Task
+	task := api.Group("/tasks")
+	task.Use(middleware.Protected())
+	task.Get("/", handler.GetAllTasks)
+	task.Post("/", handler.CreateTask)
+	task.Put("/:id", handler.UpdateTask)
+	task.Delete("/:id", handler.DeleteTask)
 }
