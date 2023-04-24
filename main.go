@@ -4,6 +4,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"strings"
 	"syscall"
 	"time"
@@ -25,13 +26,22 @@ func main() {
 		EnablePrintRoutes:     false,
 	})
 
-	logFileDir := strings.Join([]string{"./temp/", time.Now().Format("2006-01-02_15:04:05"), ".log"}, "")
+	logFileDir := filepath.Clean(strings.Join([]string{
+		"./temp/",
+		time.Now().Format("2006-01-02_15:04:05"),
+		".log",
+	}, ""))
 
-	file, err := os.OpenFile(logFileDir, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(logFileDir, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0600)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
+		file.Close()
 	}
-	defer file.Close()
+	defer func() {
+		if err := file.Close(); err != nil {
+			log.Panic(err)
+		}
+	}()
 
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
