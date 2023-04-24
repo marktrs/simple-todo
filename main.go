@@ -9,6 +9,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/marktrs/simple-todo/database"
 	"github.com/marktrs/simple-todo/router"
 
 	"github.com/gofiber/fiber/v2"
@@ -26,6 +27,7 @@ func main() {
 		EnablePrintRoutes:     false,
 	})
 
+	// Create a log file
 	logFileDir := filepath.Clean(strings.Join([]string{
 		"./temp/",
 		time.Now().Format("2006-01-02_15:04:05"),
@@ -43,6 +45,8 @@ func main() {
 		}
 	}()
 
+
+	// Setup middleware
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
 		Output:     file,
@@ -52,6 +56,10 @@ func main() {
 	app.Use(recover.New())
 	app.Use(cors.New())
 
+	// Connect to the database
+	database.ConnectDB()
+
+	// Setup routes
 	router.SetupRoutes(app)
 
 	// Listen from a different goroutine
@@ -74,8 +82,20 @@ func main() {
 	}
 
 	log.Print("running cleanup tasks...")
-
-	// TODO: add cleanup tasks
+	cleanup()
 
 	log.Print("server was successful shutdown.")
+}
+
+
+func cleanup() {
+	// Close the database connection
+	sqlDB, err := database.DB.DB()
+	if err != nil {
+		log.Panic(err)
+	}
+
+	if err := sqlDB.Close(); err != nil {
+		log.Panic(err)
+	}
 }
