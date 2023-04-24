@@ -3,7 +3,9 @@ package database
 import (
 	"fmt"
 	"log"
+	"os"
 	"strconv"
+	"time"
 
 	"github.com/marktrs/simple-todo/config"
 	"github.com/marktrs/simple-todo/model"
@@ -21,7 +23,19 @@ func ConnectDB() {
 		log.Fatal("failed to parse database port")
 	}
 
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s", config.Config("DB_HOST"), port, config.Config("DB_USER"), config.Config("DB_PASSWORD"), config.Config("DB_NAME"))
+	host := config.Config("DB_HOST")
+	if os.Getenv("DB_HOST") != "" {
+		host = os.Getenv("DB_HOST")
+	}
+
+	dsn := fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s",
+		host,
+		port,
+		config.Config("DB_USER"),
+		config.Config("DB_PASSWORD"),
+		config.Config("DB_NAME"),
+	)
 
 	if DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		TranslateError: true,
@@ -30,7 +44,30 @@ func ConnectDB() {
 		log.Fatal("failed to connect database")
 	}
 
-	if err := DB.AutoMigrate(&model.Task{}, &model.User{}); err != nil {
+	migrateTables()
+	setConnectionPool()
+}
+
+func migrateTables() {
+	// Migrate the schema
+	if err := DB.AutoMigrate(&model.User{}, &model.Task{}); err != nil {
 		log.Fatal("failed to migrate database")
 	}
+}
+
+func setConnectionPool() {
+	// Get the underlying sql.DB object of the gorm.DB object to use its functions
+	sqlDB, err := DB.DB()
+	if err != nil {
+		log.Fatal("failed to get database connection")
+	}
+
+	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
+	sqlDB.SetMaxIdleConns(10)
+
+	// SetMaxOpenConns sets the maximum number of open connections to the database.
+	sqlDB.SetMaxOpenConns(100)
+
+	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
+	sqlDB.SetConnMaxLifetime(time.Hour)
 }

@@ -1,6 +1,20 @@
 version: "3.8"
 
 services:
+  api:
+    container_name: 'simple-todo-api'
+    restart: always
+    image: simple-todo-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    environment:
+      - DB_HOST=postgres
+
   postgres:
     container_name: "postgres"
     image: "postgres:alpine"
