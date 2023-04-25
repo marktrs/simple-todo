@@ -1,19 +1,17 @@
-package main
+package handler_test
 
 import (
 	"io"
 	"net/http"
 	"testing"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/gofiber/fiber/v2"
-	"github.com/marktrs/simple-todo/database"
 	"github.com/marktrs/simple-todo/repository"
 	"github.com/marktrs/simple-todo/router"
 	"github.com/stretchr/testify/assert"
 )
 
-func TestDBIntegration(t *testing.T) {
+func TestHealthCheckAPI(t *testing.T) {
 	tests := []struct {
 		description string
 
@@ -35,22 +33,12 @@ func TestDBIntegration(t *testing.T) {
 	}
 
 	app := fiber.New()
-
-	// connect to the mock database
-	db, _, err := sqlmock.New()
-	assert.NoError(t, err)
-	defer db.Close()
-	database.ConnectExistingSQL(db)
-	router.SetupRoutes(
-		app,
-		repository.NewUserRepository(),
-		repository.NewTaskRepository(),
-	)
+	router.SetupRoutes(app, repository.NewUserRepository(), repository.NewTaskRepository())
 
 	// Iterate through test single test cases
 	for _, test := range tests {
 		req, err := http.NewRequest(
-			"GET",
+			http.MethodGet,
 			test.route,
 			nil,
 		)
