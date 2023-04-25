@@ -1,26 +1,30 @@
 package database
 
 import (
-	"fmt"
+	"database/sql"
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/marktrs/simple-todo/config"
+	"github.com/marktrs/simple-todo/logger"
 	"github.com/marktrs/simple-todo/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+	dbLogger "gorm.io/gorm/logger"
 )
 
 // ConnectDB initialize database connection
 func ConnectDB() {
 	var err error
+	log := logger.Log
+
 	p := config.Config("DB_PORT")
 	port, err := strconv.ParseUint(p, 10, 32)
 	if err != nil {
-		log.Fatal("failed to parse database port")
+		log.Fatal().AnErr("error", err).Msg("failed to parse database port")
 	}
 
 	host := config.Config("DB_HOST")
@@ -28,24 +32,31 @@ func ConnectDB() {
 		host = os.Getenv("DB_HOST")
 	}
 
-	dsn := fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s",
-		host,
-		port,
-		config.Config("DB_USER"),
-		config.Config("DB_PASSWORD"),
-		config.Config("DB_NAME"),
-	)
+	dsn := strings.Join([]string{
+		"host=", host,
+		" port=", strconv.Itoa(int(port)),
+		" user=", config.Config("DB_USER"),
+		" password=", config.Config("DB_PASSWORD"),
+		" dbname=", config.Config("DB_NAME"),
+	}, "")
 
 	if DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
 		TranslateError: true,
-		Logger:         logger.Default.LogMode(logger.Silent), // Disable DB Logger, only show error message on system logger
+		Logger:         dbLogger.Default.LogMode(dbLogger.Silent), // Disable DB Logger, only show error message on system logger
 	}); err != nil {
-		log.Fatal("failed to connect database")
+		log.Fatal().AnErr("error", err).Msg("failed to connect database")
 	}
 
 	migrateTables()
 	setConnectionPool()
+}
+
+func ConnectExistingSQL(sqlDB *sql.DB) {
+	var err error
+	log := logger.Log
+	if DB, err = gorm.Open(postgres.New(postgres.Config{Conn: sqlDB})); err != nil {
+		log.Fatal().AnErr("error", err).Msg("failed to connect database")
+	}
 }
 
 func migrateTables() {
@@ -56,10 +67,11 @@ func migrateTables() {
 }
 
 func setConnectionPool() {
+	log := logger.Log
 	// Get the underlying sql.DB object of the gorm.DB object to use its functions
 	sqlDB, err := DB.DB()
 	if err != nil {
-		log.Fatal("failed to get database connection")
+		log.Fatal().AnErr("error", err).Msg("failed to get database connection")
 	}
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
