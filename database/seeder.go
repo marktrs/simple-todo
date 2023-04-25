@@ -35,6 +35,7 @@ func seedUserData() error {
 	}
 
 	for _, user := range users {
+		user := user // prevent implicit memory aliasing in for loop
 		bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), 14)
 		if err != nil {
 			log.Fatal().AnErr("error", err).Msg("failed to generate password for seed user")
@@ -49,6 +50,7 @@ func seedUserData() error {
 				break
 			}
 			log.Fatal().AnErr("error", err).Msg("failed to seed user data")
+			return err
 		}
 	}
 

@@ -43,11 +43,23 @@ func ConnectDB() {
 		Logger:         dbLogger.Default.LogMode(dbLogger.Silent), // Disable DB Logger, only show error message on system logger
 	}); err != nil {
 		log.Fatal().AnErr("error", err).Msg("failed to connect database")
+		return
 	}
 
-	setConnectionPool()
-	migrateTables()
-	seedUserData()
+	if err := setConnectionPool(); err != nil {
+		log.Fatal().AnErr("error", err).Msg("failed to set connection pool")
+		return
+	}
+
+	if err := migrateTables(); err != nil {
+		log.Fatal().AnErr("error", err).Msg("failed to migrate database")
+		return
+	}
+
+	if err := seedUserData(); err != nil {
+		log.Fatal().AnErr("error", err).Msg("failed to seed user data")
+		return
+	}
 }
 
 func ConnectExistingSQL(sqlDB *sql.DB) {
@@ -55,15 +67,17 @@ func ConnectExistingSQL(sqlDB *sql.DB) {
 	log := logger.Log
 	if DB, err = gorm.Open(postgres.New(postgres.Config{Conn: sqlDB})); err != nil {
 		log.Fatal().AnErr("error", err).Msg("failed to connect database")
+		return
 	}
 }
 
-func setConnectionPool() {
+func setConnectionPool() error {
 	log := logger.Log
 	// Get the underlying sql.DB object of the gorm.DB object to use its functions
 	sqlDB, err := DB.DB()
 	if err != nil {
 		log.Fatal().AnErr("error", err).Msg("failed to get database connection")
+		return err
 	}
 
 	// SetMaxIdleConns sets the maximum number of connections in the idle connection pool.
@@ -74,4 +88,6 @@ func setConnectionPool() {
 
 	// SetConnMaxLifetime sets the maximum amount of time a connection may be reused.
 	sqlDB.SetConnMaxLifetime(time.Hour)
+
+	return nil
 }
