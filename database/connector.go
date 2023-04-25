@@ -2,7 +2,6 @@ package database
 
 import (
 	"database/sql"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -10,7 +9,6 @@ import (
 
 	"github.com/marktrs/simple-todo/config"
 	"github.com/marktrs/simple-todo/logger"
-	"github.com/marktrs/simple-todo/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	dbLogger "gorm.io/gorm/logger"
@@ -47,8 +45,9 @@ func ConnectDB() {
 		log.Fatal().AnErr("error", err).Msg("failed to connect database")
 	}
 
-	migrateTables()
 	setConnectionPool()
+	migrateTables()
+	seedUserData()
 }
 
 func ConnectExistingSQL(sqlDB *sql.DB) {
@@ -56,13 +55,6 @@ func ConnectExistingSQL(sqlDB *sql.DB) {
 	log := logger.Log
 	if DB, err = gorm.Open(postgres.New(postgres.Config{Conn: sqlDB})); err != nil {
 		log.Fatal().AnErr("error", err).Msg("failed to connect database")
-	}
-}
-
-func migrateTables() {
-	// Migrate the schema
-	if err := DB.AutoMigrate(&model.User{}, &model.Task{}); err != nil {
-		log.Fatal("failed to migrate database")
 	}
 }
 

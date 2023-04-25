@@ -65,5 +65,6 @@ func cleanup() {
 	if err := sqlDB.Close(); err != nil {
 		log.Panic().AnErr("error", err).Msg("failed to close database connection")
 	}
+
 	log.Info().Msg("server was successful shutdown.")
 }
