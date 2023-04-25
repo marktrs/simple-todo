@@ -2,19 +2,29 @@ package router
 
 import (
 	"github.com/marktrs/simple-todo/handler"
+	"github.com/marktrs/simple-todo/logger"
 	"github.com/marktrs/simple-todo/middleware"
 
+	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/logger"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/monitor"
+	"github.com/gofiber/fiber/v2/middleware/recover"
 )
 
 // SetupRoutes setup router api
 func SetupRoutes(app *fiber.App) {
-	// Middleware
+	app.Use(recover.New())
+	app.Use(cors.New())
+
+	// Logger middleware for all routes
+	app.Use(adaptor.HTTPMiddleware(logger.HttpLogger))
+
+	// Metrics
 	app.Get("/metrics", monitor.New(monitor.Config{Title: "Simple-TODO API Metrics"}))
 
-	api := app.Group("/api", logger.New())
+	api := app.Group("/api")
+	// Health check
 	api.Get("/health", handler.HealthCheck)
 
 	// Auth

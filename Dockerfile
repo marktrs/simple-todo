@@ -26,8 +26,7 @@ COPY .env .
 COPY start.sh .
 COPY wait-for.sh .
 
-RUN chmod +x main
-RUN chmod +x start.sh
+RUN mkdir temp
 
 # Exposes port 3000 because our program listens on that port
 EXPOSE 3000
