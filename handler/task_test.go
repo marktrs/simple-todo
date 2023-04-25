@@ -32,7 +32,8 @@ var testJWTSigningKey = "secret"
 var tokenWithClaims = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI3MDAyMDksInVzZXJfaWQiOiJ0ZXN0X2lkIiwidXNlcm5hbWUiOiJ0ZXN0In0.XiOkXAVzZ5hW5DbviA2juzPRVuaBEuq19d1dMlVC2uU"
 
 func (suite *TaskHandlerTestSuite) SetupTest() {
-	os.Setenv("SECRET", testJWTSigningKey)
+	// Set environment secret for JWT signing
+	suite.NoError(os.Setenv("SECRET", testJWTSigningKey))
 
 	suite.user = &model.User{
 		ID:       "test_id",

@@ -17,7 +17,7 @@ var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibm
 
 func TestProtected(t *testing.T) {
 	// Set environment secret for JWT signing
-	os.Setenv("SECRET", testJWTSigningKey)
+	assert.NoError(t, os.Setenv("SECRET", testJWTSigningKey))
 
 	app := fiber.New()
 
@@ -46,7 +46,7 @@ func TestProtected(t *testing.T) {
 
 func TestJWTUnauthorized(t *testing.T) {
 	// Set environment secret for JWT signing
-	os.Setenv("SECRET", testJWTSigningKey)
+	assert.NoError(t, os.Setenv("SECRET", testJWTSigningKey))
 
 	app := fiber.New()
 
@@ -74,7 +74,7 @@ func TestJWTUnauthorized(t *testing.T) {
 
 func TestJWTMalformed(t *testing.T) {
 	// Set environment secret for JWT signing
-	os.Setenv("SECRET", testJWTSigningKey)
+	assert.NoError(t, os.Setenv("SECRET", testJWTSigningKey))
 
 	app := fiber.New()
 

@@ -86,7 +86,7 @@ func (h *taskHandler) UpdateTask(c *fiber.Ctx) error {
 	}
 
 	var updates *model.Task
-	if err := c.BodyParser(&updates); err != nil {
+	if err = c.BodyParser(&updates); err != nil {
 		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "bad request"})
 	}
 

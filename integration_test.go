@@ -39,7 +39,10 @@ func TestDBIntegration(t *testing.T) {
 	// connect to the mock database
 	db, _, err := sqlmock.New()
 	assert.NoError(t, err)
-	defer db.Close()
+	defer func() {
+		assert.NoError(t, db.Close())
+	}()
+
 	database.ConnectExistingSQL(db)
 	router.SetupRoutes(
 		app,
