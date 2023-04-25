@@ -4,6 +4,7 @@ import (
 	"github.com/marktrs/simple-todo/handler"
 	"github.com/marktrs/simple-todo/logger"
 	"github.com/marktrs/simple-todo/middleware"
+	"github.com/marktrs/simple-todo/repository"
 
 	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2"
@@ -13,7 +14,11 @@ import (
 )
 
 // SetupRoutes setup router api
-func SetupRoutes(app *fiber.App) {
+func SetupRoutes(
+	app *fiber.App,
+	userRepo repository.UserRepository,
+	taskRepo repository.TaskRepository,
+) {
 	app.Use(recover.New())
 	app.Use(cors.New())
 
@@ -28,18 +33,21 @@ func SetupRoutes(app *fiber.App) {
 	api.Get("/health", handler.HealthCheck)
 
 	// Auth
+	authHandler := handler.NewAuthHandler(userRepo)
 	auth := api.Group("/auth")
-	auth.Post("/login", handler.Login)
+	auth.Post("/login", authHandler.Login)
 
 	// User
+	userHandler := handler.NewUserHandler(userRepo)
 	user := api.Group("/users")
-	user.Post("/", handler.CreateUser)
+	user.Post("/", userHandler.CreateUser)
 
 	// Task
+	taskHandler := handler.NewTaskHandler(taskRepo)
 	task := api.Group("/tasks")
 	task.Use(middleware.Protected())
-	task.Get("/", handler.GetAllTasks)
-	task.Post("/", handler.CreateTask)
-	task.Put("/:id", handler.UpdateTask)
-	task.Delete("/:id", handler.DeleteTask)
+	task.Get("/", taskHandler.GetAllTasks)
+	task.Post("/", taskHandler.CreateTask)
+	task.Put("/:id", taskHandler.UpdateTask)
+	task.Delete("/:id", taskHandler.DeleteTask)
 }

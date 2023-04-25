@@ -1,3 +1,4 @@
 .vscode/
 temp/
 .env
+coverage.out

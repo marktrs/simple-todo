@@ -9,14 +9,16 @@ import (
 
 // Protected protect routes
 func Protected() fiber.Handler {
+	secret := config.Config("SECRET")
+
 	return jwtware.New(jwtware.Config{
-		SigningKey:   []byte(config.Config("SECRET")),
+		SigningKey:   []byte(secret),
 		ErrorHandler: jwtError,
 	})
 }
 
 func jwtError(c *fiber.Ctx, err error) error {
-	if err.Error() == "missing or malformed JWT" {
+	if err.Error() == "signature is invalid" {
 		return c.Status(fiber.StatusBadRequest).
 			JSON(fiber.Map{"status": "error", "message": "missing or malformed JWT", "data": nil})
 	}

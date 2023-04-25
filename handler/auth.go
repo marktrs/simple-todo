@@ -2,12 +2,11 @@ package handler
 
 import (
 	"errors"
+	"net/http"
 	"time"
 
 	"github.com/marktrs/simple-todo/config"
-	"github.com/marktrs/simple-todo/database"
-	"github.com/marktrs/simple-todo/model"
-
+	"github.com/marktrs/simple-todo/repository"
 	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,12 +14,28 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// CheckPasswordHash compare password with hash
-func CheckPasswordHash(password, hash string) bool {
+// AuthHandler - handler for auth routes
+type AuthHandler interface {
+	Login(c *fiber.Ctx) error
+}
+
+type authHandler struct {
+	userRepo repository.UserRepository
+}
+
+func NewAuthHandler(userRepo repository.UserRepository) AuthHandler {
+	return &authHandler{
+		userRepo,
+	}
+}
+
+// checkPasswordHash - compare password with hash
+func checkPasswordHash(password, hash string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	return err == nil
 }
 
+// GenerateToken - generate a jwt token with user id and username as claims
 func GenerateToken(id, username string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -36,32 +51,18 @@ func GenerateToken(id, username string) (string, error) {
 	return t, nil
 }
 
-func getUserByUsername(u string) (*model.User, error) {
-	db := database.DB
-	var user model.User
-	if err := db.Where(&model.User{Username: u}).Find(&user).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return nil, nil
-		}
-		return nil, err
-	}
-
-	return &user, nil
-}
-
-// Login get user and password and return an access token
-func Login(c *fiber.Ctx) error {
-	type LoginInput struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
-	}
-
+// Login - compare user and password and return an access token
+func (h *authHandler) Login(c *fiber.Ctx) error {
 	type UserData struct {
 		ID       string `json:"id"`
 		Username string `json:"username"`
 	}
 
-	input := new(LoginInput)
+	var input struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
 	var ud UserData
 
 	if err := c.BodyParser(&input); err != nil {
@@ -71,29 +72,26 @@ func Login(c *fiber.Ctx) error {
 	username := input.Username
 	pass := input.Password
 
-	user, err := getUserByUsername(username)
+	user, err := h.userRepo.GetByUsername(username)
 	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Error on username", "data": err})
-	}
-
-	if user == nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "User not found", "data": err})
-	}
-
-	if user != nil {
-		ud = UserData{
-			ID:       user.ID,
-			Username: user.Username,
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "User not found"})
 		}
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error on username", "data": err})
 	}
 
-	if !CheckPasswordHash(pass, user.Password) {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Invalid password", "data": nil})
+	ud = UserData{
+		ID:       user.ID,
+		Username: user.Username,
+	}
+
+	if !checkPasswordHash(pass, user.Password) {
+		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Invalid password", "data": nil})
 	}
 
 	t, err := GenerateToken(user.ID, user.Username)
 	if err != nil {
-		return c.SendStatus(fiber.StatusInternalServerError)
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Invalid password", "data": nil})
 	}
 
 	return c.JSON(fiber.Map{"status": "success", "message": "Success login", "token": t, "user": ud})

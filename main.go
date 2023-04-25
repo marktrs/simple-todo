@@ -7,6 +7,7 @@ import (
 
 	"github.com/marktrs/simple-todo/database"
 	"github.com/marktrs/simple-todo/logger"
+	"github.com/marktrs/simple-todo/repository"
 	"github.com/marktrs/simple-todo/router"
 
 	"github.com/gofiber/fiber/v2"
@@ -24,7 +25,10 @@ func main() {
 	database.ConnectDB()
 
 	// Setup routes
-	router.SetupRoutes(app)
+	userRepo := repository.NewUserRepository()
+	taskRepo := repository.NewTaskRepository()
+
+	router.SetupRoutes(app, userRepo, taskRepo)
 
 	// Listen from a different goroutine
 	go func() {

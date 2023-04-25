@@ -1,6 +1,8 @@
 package handler
 
-import "github.com/gofiber/fiber/v2"
+import (
+	"github.com/gofiber/fiber/v2"
+)
 
 // HealthCheck handle api status
 func HealthCheck(c *fiber.Ctx) error {
