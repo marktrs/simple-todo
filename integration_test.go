@@ -5,9 +5,11 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/gofiber/fiber/v2"
+	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/marktrs/simple-todo/database"
 	"github.com/marktrs/simple-todo/repository"
 	"github.com/marktrs/simple-todo/router"
+	"github.com/marktrs/simple-todo/server"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -32,16 +34,18 @@ func TestDBIntegration(t *testing.T) {
 		},
 	}
 
-	app := fiber.New()
+	app := server.New().App()
 
-	// // connect to the mock database
-	// db, _, err := sqlmock.New()
-	// assert.NoError(t, err)
-	// defer func() {
-	// 	assert.NoError(t, db.Close())
-	// }()
+	// connect to the mock database
+	db, mock, err := sqlmock.New()
+	assert.NoError(t, err)
+	mock.ExpectClose()
 
-	// database.ConnectExistingSQL(db)
+	defer func() {
+		assert.NoError(t, db.Close())
+	}()
+
+	database.ConnectExistingSQL(db)
 	router.SetupRoutes(
 		app,
 		repository.NewUserRepository(),
