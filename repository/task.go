@@ -1,8 +1,12 @@
 package repository
 
 import (
+	"errors"
+	"time"
+
 	"github.com/marktrs/simple-todo/database"
 	"github.com/marktrs/simple-todo/model"
+	"gorm.io/gorm"
 )
 
 // TaskRepository - interface for task repository
@@ -26,6 +30,9 @@ func (r *taskRepository) GetAllTasks(userId string) ([]model.Task, error) {
 	var tasks []model.Task
 
 	if err := db.Where("user_id = ?", userId).Order("created_at desc").Find(&tasks).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return tasks, nil
+		}
 		return nil, err
 	}
 
@@ -61,8 +68,9 @@ func (r *taskRepository) UpdateTask(task, updates *model.Task) (*model.Task, err
 	db := database.DB
 
 	if err := db.Model(&task).Updates(map[string]interface{}{
-		"message":   updates.Message,
-		"completed": updates.Completed,
+		"message":    updates.Message,
+		"completed":  updates.Completed,
+		"updated_at": time.Now(),
 	}).Error; err != nil {
 		return nil, err
 	}

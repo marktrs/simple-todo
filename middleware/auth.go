@@ -7,6 +7,11 @@ import (
 	jwtware "github.com/gofiber/jwt/v2"
 )
 
+type AuthErrorResponse struct {
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
 // Protected protect routes
 func Protected() fiber.Handler {
 	secret := config.Config("SECRET")
@@ -18,10 +23,15 @@ func Protected() fiber.Handler {
 }
 
 func jwtError(c *fiber.Ctx, err error) error {
-	if err.Error() == "signature is invalid" {
-		return c.Status(fiber.StatusBadRequest).
-			JSON(fiber.Map{"status": "error", "message": "missing or malformed JWT", "data": nil})
+	body := AuthErrorResponse{
+		Status:  "error",
+		Message: "invalid or expired JWT",
 	}
-	return c.Status(fiber.StatusUnauthorized).
-		JSON(fiber.Map{"status": "error", "message": "invalid or expired JWT", "data": nil})
+
+	if err.Error() == "signature is invalid" {
+		body.Message = "missing or malformed JWT"
+		return c.Status(fiber.StatusBadRequest).JSON(body)
+	}
+
+	return c.Status(fiber.StatusUnauthorized).JSON(body)
 }
