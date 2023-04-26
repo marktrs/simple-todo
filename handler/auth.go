@@ -14,6 +14,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var (
+	ErrGenerateToken = errors.New("error generating token")
+)
+
+
 // AuthHandler - handler for auth routes
 type AuthHandler interface {
 	Login(c *fiber.Ctx) error
@@ -86,11 +91,12 @@ func (h *authHandler) Login(c *fiber.Ctx) error {
 	}
 
 	if !checkPasswordHash(pass, user.Password) {
-		return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "Invalid password", "data": nil})
+		return fiber.ErrUnauthorized
 	}
 
 	t, err := GenerateToken(user.ID, user.Username)
 	if err != nil {
+		return ErrGenerateToken
 		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Invalid password", "data": nil})
 	}
 

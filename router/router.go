@@ -2,7 +2,6 @@ package router
 
 import (
 	"github.com/marktrs/simple-todo/handler"
-	"github.com/marktrs/simple-todo/logger"
 	"github.com/marktrs/simple-todo/middleware"
 	"github.com/marktrs/simple-todo/repository"
 
@@ -27,7 +26,7 @@ func SetupRoutes(
 	}))
 
 	// Logger middleware for all routes
-	app.Use(adaptor.HTTPMiddleware(logger.HttpLogger))
+	app.Use(adaptor.HTTPMiddleware(middleware.HTTPLogger))
 
 	// Metrics
 	app.Get("/metrics", monitor.New(monitor.Config{Title: "Simple-TODO API Metrics"}))
