@@ -20,7 +20,11 @@ func SetupRoutes(
 	taskRepo repository.TaskRepository,
 ) {
 	app.Use(recover.New())
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+	}))
 
 	// Logger middleware for all routes
 	app.Use(adaptor.HTTPMiddleware(logger.HttpLogger))
