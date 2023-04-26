@@ -3,7 +3,7 @@ module github.com/marktrs/simple-todo
 go 1.20
 
 require (
-	github.com/DATA-DOG/go-sqlmock v1.5.0
+	github.com/go-playground/validator/v10 v10.12.0
 	github.com/gofiber/adaptor/v2 v2.2.1
 	github.com/gofiber/fiber/v2 v2.44.0
 	github.com/gofiber/jwt/v2 v2.2.7
@@ -13,7 +13,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/justinas/alice v1.2.0
 	github.com/rs/zerolog v1.29.1
-	github.com/stretchr/testify v1.8.1
+	github.com/stretchr/testify v1.8.2
 	golang.org/x/crypto v0.7.0
 	gorm.io/driver/postgres v1.5.0
 	gorm.io/gorm v1.25.0
@@ -22,12 +22,15 @@ require (
 require (
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/go-playground/locales v0.14.1 // indirect
+	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/pgx/v5 v5.3.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/klauspost/compress v1.16.3 // indirect
+	github.com/leodido/go-urn v1.2.2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.18 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect

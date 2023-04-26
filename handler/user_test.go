@@ -10,7 +10,9 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
+	"github.com/marktrs/simple-todo/middleware"
 	"github.com/marktrs/simple-todo/router"
+	"github.com/marktrs/simple-todo/server"
 	repoMock "github.com/marktrs/simple-todo/testutil/mocks/repository"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -25,7 +27,7 @@ type UserHandlerTestSuite struct {
 
 func (suite *UserHandlerTestSuite) SetupTest() {
 	suite.ctrl = gomock.NewController(suite.T())
-	suite.app = fiber.New()
+	suite.app = server.New().App()
 	suite.userRepo = repoMock.NewMockUserRepository(suite.ctrl)
 	router.SetupRoutes(suite.app, suite.userRepo, repoMock.NewMockTaskRepository(suite.ctrl))
 }
@@ -37,13 +39,11 @@ func (suite *UserHandlerTestSuite) TearDownTest() {
 func (suite *UserHandlerTestSuite) TestCreateUser() {
 	tests := []struct {
 		description string
-
 		// Test input
 		route  string
 		method string
 		body   string
 		mock   func()
-
 		// Expected output
 		expectedError bool
 		expectedCode  int
@@ -67,7 +67,7 @@ func (suite *UserHandlerTestSuite) TestCreateUser() {
 			mock:          func() {},
 			expectedError: false,
 			expectedCode:  http.StatusBadRequest,
-			expectedBody:  `{"message":"Review your input", "status":"error"}`,
+			expectedBody:  `{"message":"Bad Request", "status":"error"}`,
 		},
 		{
 			description:   "create user with a password length = 73 (too long)",
@@ -76,7 +76,12 @@ func (suite *UserHandlerTestSuite) TestCreateUser() {
 			mock:          func() {},
 			expectedError: false,
 			expectedCode:  http.StatusBadRequest,
-			expectedBody:  `{"message":"Couldn't hash password", "status":"error"}`,
+			expectedBody: `{
+				"message":"Failed input validation",
+				"status":"error",
+				"validation_error":[
+					{"field":"Password","reason":"max=72"}
+				]}`,
 		},
 		{
 			description: "create duplicated username",
@@ -87,7 +92,7 @@ func (suite *UserHandlerTestSuite) TestCreateUser() {
 			},
 			expectedError: false,
 			expectedCode:  http.StatusConflict,
-			expectedBody:  `{"message":"This username is already exists","status":"error"}`,
+			expectedBody:  `{"message":"duplicated key not allowed","status":"error"}`,
 		},
 		{
 			description: "create user with db error",
@@ -97,8 +102,8 @@ func (suite *UserHandlerTestSuite) TestCreateUser() {
 				suite.userRepo.EXPECT().CreateUser(gomock.Any()).Return(gorm.ErrInvalidField)
 			},
 			expectedError: false,
-			expectedCode:  http.StatusInternalServerError,
-			expectedBody:  `{"message":"Couldn't create user","status":"error"}`,
+			expectedCode:  http.StatusBadRequest,
+			expectedBody:  `{"message":"invalid field","status":"error"}`,
 		},
 	}
 
@@ -133,8 +138,9 @@ func (suite *UserHandlerTestSuite) TestCreateUser() {
 
 		// Assert the response body
 		type ResponseBody struct {
-			Message string `json:"message"`
-			Status  string `json:"status"`
+			Message          string                       `json:"message"`
+			Status           string                       `json:"status"`
+			ValidationErrors []middleware.ValidationError `json:"validation_error,omitempty"`
 		}
 
 		var actual, expect ResponseBody
@@ -147,7 +153,6 @@ func (suite *UserHandlerTestSuite) TestCreateUser() {
 
 		suite.Assertions.Equal(expect, actual, test.description)
 	}
-
 }
 
 func TestUserHandlerTestSuite(t *testing.T) {

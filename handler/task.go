@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/google/uuid"
 	"github.com/marktrs/simple-todo/model"
@@ -22,12 +23,14 @@ type TaskHandler interface {
 }
 
 type taskHandler struct {
-	taskRepo repository.TaskRepository
+	taskRepo  repository.TaskRepository
+	validator *validator.Validate
 }
 
-func NewTaskHandler(taskRepo repository.TaskRepository) TaskHandler {
+func NewTaskHandler(v *validator.Validate, taskRepo repository.TaskRepository) TaskHandler {
 	return &taskHandler{
-		taskRepo: taskRepo,
+		taskRepo:  taskRepo,
+		validator: v,
 	}
 }
 

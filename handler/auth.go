@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/marktrs/simple-todo/config"
 	"github.com/marktrs/simple-todo/repository"
 	"gorm.io/gorm"
@@ -18,19 +19,20 @@ var (
 	ErrGenerateToken = errors.New("error generating token")
 )
 
-
 // AuthHandler - handler for auth routes
 type AuthHandler interface {
 	Login(c *fiber.Ctx) error
 }
 
 type authHandler struct {
-	userRepo repository.UserRepository
+	userRepo  repository.UserRepository
+	validator *validator.Validate
 }
 
-func NewAuthHandler(userRepo repository.UserRepository) AuthHandler {
+func NewAuthHandler(v *validator.Validate, userRepo repository.UserRepository) AuthHandler {
 	return &authHandler{
-		userRepo,
+		userRepo:  userRepo,
+		validator: v,
 	}
 }
 

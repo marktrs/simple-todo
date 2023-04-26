@@ -2,32 +2,35 @@ package handler
 
 import (
 	"errors"
-	"net/http"
 
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"github.com/marktrs/simple-todo/model"
 	"github.com/marktrs/simple-todo/repository"
-	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
 	"golang.org/x/crypto/bcrypt"
 )
 
-// UserHandler - handler for user routes
+// UserHandler - interface for user handler methods
 type UserHandler interface {
 	CreateUser(c *fiber.Ctx) error
 }
 
 type userHandler struct {
-	userRepo repository.UserRepository
+	userRepo  repository.UserRepository
+	validator *validator.Validate
 }
 
-func NewUserHandler(userRepo repository.UserRepository) UserHandler {
+// NewUserHandler - create a new user handler
+func NewUserHandler(v *validator.Validate, userRepo repository.UserRepository) UserHandler {
 	return &userHandler{
-		userRepo: userRepo,
+		userRepo:  userRepo,
+		validator: v,
 	}
 }
 
+// hashPassword - hash a password from a string using bcrypt
 func hashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
 	return string(bytes), err
@@ -35,34 +38,39 @@ func hashPassword(password string) (string, error) {
 
 // CreateUser - add a new user record to the database
 func (h *userHandler) CreateUser(c *fiber.Ctx) error {
-	var user *model.User
+	var req *model.CreateUserRequest
 
-	if err := c.BodyParser(&user); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Review your input", "data": err})
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.ErrBadRequest
 	}
 
-	user.ID = uuid.NewString()
+	if err := req.Validate(h.validator); err != nil {
+		return err
+	}
 
-	hash, err := hashPassword(user.Password)
+	var user model.User
+	user.ID = uuid.New().String()
+	user.Username = req.Username
+
+	hash, err := hashPassword(req.Password)
 	if err != nil {
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Couldn't hash password", "data": err})
+		return fiber.ErrBadRequest
 	}
 
 	user.Password = hash
-	if err = h.userRepo.CreateUser(user); err != nil {
-		message := "Couldn't create user"
-		httpCode := http.StatusInternalServerError
-		if errors.Is(err, gorm.ErrDuplicatedKey) {
-			message = "This username is already exists"
-			httpCode = http.StatusConflict
-		}
-		return c.Status(httpCode).JSON(fiber.Map{"status": "error", "message": message})
+	if err = h.userRepo.CreateUser(&user); err != nil {
+		return err
 	}
 
 	t, err := GenerateToken(user.ID, user.Username)
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Couldn't generate token", "data": err})
+		return errors.Join(err, ErrGenerateToken)
 	}
 
-	return c.JSON(fiber.Map{"status": "success", "message": "Created user", "token": t, "user": user})
+	return c.JSON(model.CreateUserResponse{
+		Status:  "success",
+		Message: "Created user",
+		Token:   t,
+		User:    &user,
+	})
 }
