@@ -44,7 +44,7 @@ func (h *taskHandler) GetAllTasks(c *fiber.Ctx) error {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return c.JSON(fiber.Map{"status": "success", "tasks": tasks})
 		}
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "couldn't get tasks", "data": err})
+		return err
 	}
 
 	return c.JSON(fiber.Map{"status": "success", "tasks": tasks})

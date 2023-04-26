@@ -2,13 +2,12 @@ package handler
 
 import (
 	"errors"
-	"net/http"
 	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/marktrs/simple-todo/config"
+	"github.com/marktrs/simple-todo/model"
 	"github.com/marktrs/simple-todo/repository"
-	"gorm.io/gorm"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -46,6 +45,7 @@ func checkPasswordHash(password, hash string) bool {
 func GenerateToken(id, username string) (string, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
+
 	claims["username"] = username
 	claims["user_id"] = id
 	claims["exp"] = time.Now().Add(time.Hour * 72).Unix()
@@ -60,47 +60,36 @@ func GenerateToken(id, username string) (string, error) {
 
 // Login - compare user and password and return an access token
 func (h *authHandler) Login(c *fiber.Ctx) error {
-	type UserData struct {
-		ID       string `json:"id"`
-		Username string `json:"username"`
+	var req *model.LoginRequest
+
+	if err := c.BodyParser(&req); err != nil {
+		return err
 	}
 
-	var input struct {
-		Username string `json:"username"`
-		Password string `json:"password"`
+	if err := req.Validate(h.validator); err != nil {
+		return err
 	}
 
-	var ud UserData
+	var user *model.User
+	var err error
 
-	if err := c.BodyParser(&input); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error on login request", "data": err})
+	if user, err = h.userRepo.GetByUsername(req.Username); err != nil {
+		return err
 	}
 
-	username := input.Username
-	pass := input.Password
-
-	user, err := h.userRepo.GetByUsername(username)
-	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return c.Status(http.StatusUnauthorized).JSON(fiber.Map{"status": "error", "message": "User not found"})
-		}
-		return c.Status(http.StatusBadRequest).JSON(fiber.Map{"status": "error", "message": "Error on username", "data": err})
-	}
-
-	ud = UserData{
-		ID:       user.ID,
-		Username: user.Username,
-	}
-
-	if !checkPasswordHash(pass, user.Password) {
+	if !checkPasswordHash(req.Password, user.Password) {
 		return fiber.ErrUnauthorized
 	}
 
 	t, err := GenerateToken(user.ID, user.Username)
 	if err != nil {
 		return ErrGenerateToken
-		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"status": "error", "message": "Invalid password", "data": nil})
 	}
 
-	return c.JSON(fiber.Map{"status": "success", "message": "Success login", "token": t, "user": ud})
+	return c.JSON(&model.UserResponse{
+		Status:  "success",
+		Message: "login success",
+		Token:   t,
+		User:    user,
+	})
 }

@@ -27,9 +27,18 @@ func (r *CreateUserRequest) Validate(validator *validator.Validate) error {
 	return validator.Struct(r)
 }
 
-type CreateUserResponse struct {
+type UserResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
 	Token   string `json:"token"`
 	User    *User  `json:"user"`
+}
+
+type LoginRequest struct {
+	Username string `json:"username" validate:"min=4,max=72,required"`
+	Password string `json:"password" validate:"min=4,max=72,required"`
+}
+
+func (r *LoginRequest) Validate(validator *validator.Validate) error {
+	return validator.Struct(r)
 }

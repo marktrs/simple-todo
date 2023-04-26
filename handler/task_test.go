@@ -3,7 +3,6 @@ package handler_test
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -130,8 +129,6 @@ func (suite *TaskHandlerTestSuite) TestGetAllTasks() {
 
 		err = json.Unmarshal([]byte(test.expectedBody), &expect)
 		suite.NoError(err, test.description)
-
-		log.Println(test.expectedBody)
 
 		suite.Assertions.Equal(expect, actual, test.description)
 	}

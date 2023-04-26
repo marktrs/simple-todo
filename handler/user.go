@@ -67,7 +67,7 @@ func (h *userHandler) CreateUser(c *fiber.Ctx) error {
 		return errors.Join(err, ErrGenerateToken)
 	}
 
-	return c.JSON(model.CreateUserResponse{
+	return c.JSON(&model.UserResponse{
 		Status:  "success",
 		Message: "Created user",
 		Token:   t,

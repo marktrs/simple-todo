@@ -3,7 +3,6 @@ package middleware_test
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http/httptest"
 	"testing"
 
@@ -83,8 +82,6 @@ func TestHandleHTTPError(t *testing.T) {
 
 		body, err := io.ReadAll(resp.Body)
 		assert.NoError(t, err, test.name)
-
-		log.Printf("%s", string(body))
 
 		var actual, expect middleware.ErrorResponse
 

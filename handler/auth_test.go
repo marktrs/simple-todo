@@ -3,7 +3,6 @@ package handler_test
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -11,10 +10,13 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
+	"github.com/marktrs/simple-todo/middleware"
 	"github.com/marktrs/simple-todo/model"
 	"github.com/marktrs/simple-todo/router"
+	"github.com/marktrs/simple-todo/server"
 	repoMock "github.com/marktrs/simple-todo/testutil/mocks/repository"
 	"github.com/stretchr/testify/suite"
+	"gorm.io/gorm"
 )
 
 type AuthHandlerTestSuite struct {
@@ -26,7 +28,7 @@ type AuthHandlerTestSuite struct {
 
 func (suite *AuthHandlerTestSuite) SetupTest() {
 	suite.ctrl = gomock.NewController(suite.T())
-	suite.app = fiber.New()
+	suite.app = server.New().App()
 	suite.userRepo = repoMock.NewMockUserRepository(suite.ctrl)
 	router.SetupRoutes(suite.app, suite.userRepo, repoMock.NewMockTaskRepository(suite.ctrl))
 }
@@ -56,28 +58,43 @@ func (suite *AuthHandlerTestSuite) TestLogin() {
 		expectedCode  int
 		expectedBody  string
 	}{
-		// {
-		// 	description: "authenticate user without registration",
-		// 	route:       "/api/auth/login",
-		// 	body:        `{"username": "test", "password": "test"}`,
-		// 	mock: func() {
-		// 		suite.userRepo.EXPECT().GetByUsername(gomock.Any()).Return(nil, gorm.ErrRecordNotFound)
-		// 	},
-		// 	expectedError: false,
-		// 	expectedCode:  http.StatusUnauthorized,
-		// 	expectedBody:  `{"message":"User not found","status":"error"}`,
-		// },
-		// {
-		// 	description: "authenticate user with invalid credentials",
-		// 	route:       "/api/auth/login",
-		// 	body:        `{"username": "test", "password": "invalid_password"}`,
-		// 	mock: func() {
-		// 		suite.userRepo.EXPECT().GetByUsername(gomock.Any()).Return(actualUser, nil)
-		// 	},
-		// 	expectedError: false,
-		// 	expectedCode:  http.StatusUnauthorized,
-		// 	expectedBody:  `{"message":"Invalid password", "status":"error"}`,
-		// },
+		{
+			description: "authenticate user without registration",
+			route:       "/api/auth/login",
+			body:        `{"username": "test", "password": "test"}`,
+			mock: func() {
+				suite.userRepo.EXPECT().GetByUsername(gomock.Any()).Return(nil, gorm.ErrRecordNotFound)
+			},
+			expectedError: false,
+			expectedCode:  http.StatusNotFound,
+			expectedBody:  `{"message":"record not found","status":"error"}`,
+		},
+		{
+			description:   "authenticate user with validation error",
+			route:         "/api/auth/login",
+			body:          `{}`,
+			mock:          func() {},
+			expectedError: false,
+			expectedCode:  http.StatusBadRequest,
+			expectedBody: `{
+				"message":"Failed input validation",
+				"status":"error",
+				"validation_error":[
+					{"field":"Username","reason":"min=4"},
+					{"field":"Password","reason":"min=4"}
+				]}`,
+		},
+		{
+			description: "authenticate user with invalid credentials",
+			route:       "/api/auth/login",
+			body:        `{"username": "test", "password": "invalid_password"}`,
+			mock: func() {
+				suite.userRepo.EXPECT().GetByUsername(gomock.Any()).Return(actualUser, nil)
+			},
+			expectedError: false,
+			expectedCode:  http.StatusUnauthorized,
+			expectedBody:  `{"message":"Unauthorized", "status":"error"}`,
+		},
 		{
 			description: "authenticate user with valid credentials",
 			route:       "/api/auth/login",
@@ -87,7 +104,7 @@ func (suite *AuthHandlerTestSuite) TestLogin() {
 			},
 			expectedError: false,
 			expectedCode:  http.StatusOK,
-			expectedBody:  `{"message":"Success login", "status":"success"}`,
+			expectedBody:  `{"message":"login success", "status":"success"}`,
 		},
 	}
 
@@ -120,11 +137,11 @@ func (suite *AuthHandlerTestSuite) TestLogin() {
 		body, err := io.ReadAll(res.Body)
 		suite.NoError(err, test.description)
 
-		log.Println(string(body))
 		// Assert the response body
 		type ResponseBody struct {
-			Message string `json:"message"`
-			Status  string `json:"status"`
+			Message          string                       `json:"message"`
+			Status           string                       `json:"status"`
+			ValidationErrors []middleware.ValidationError `json:"validation_error,omitempty"`
 		}
 
 		var actual, expect ResponseBody
