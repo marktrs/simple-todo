@@ -3,7 +3,6 @@ package handler_test
 import (
 	"encoding/json"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -12,8 +11,10 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
+	"github.com/marktrs/simple-todo/middleware"
 	"github.com/marktrs/simple-todo/model"
 	"github.com/marktrs/simple-todo/router"
+	"github.com/marktrs/simple-todo/server"
 	repoMock "github.com/marktrs/simple-todo/testutil/mocks/repository"
 	"github.com/stretchr/testify/suite"
 	"gorm.io/gorm"
@@ -42,7 +43,7 @@ func (suite *TaskHandlerTestSuite) SetupTest() {
 	}
 
 	suite.ctrl = gomock.NewController(suite.T())
-	suite.app = fiber.New()
+	suite.app = server.New().App()
 	suite.taskRepo = repoMock.NewMockTaskRepository(suite.ctrl)
 	suite.userRepo = repoMock.NewMockUserRepository(suite.ctrl)
 	router.SetupRoutes(suite.app, suite.userRepo, suite.taskRepo)
@@ -77,23 +78,14 @@ func (suite *TaskHandlerTestSuite) TestGetAllTasks() {
 			expectedBody: `{"status":"success","tasks":[{"id":"1","message":"test","user_id":"test_id"}]}`,
 			expectedCode: http.StatusOK,
 		},
-		// {
-		// 	description: "get all tasks with authorized user with db error not found",
-		// 	requireAuth: true,
-		// 	mockFunc: func() {
-		// 		suite.taskRepo.EXPECT().GetAllTasks(gomock.Any()).Return(nil, gorm.ErrRecordNotFound)
-		// 	},
-		// 	expectedBody: `{"status":"success","tasks": nil}`,
-		// 	expectedCode: http.StatusOK,
-		// },
 		{
-			description: "get all tasks with authorized user and db error",
+			description: "get all tasks with authorized user with db error not found",
 			requireAuth: true,
 			mockFunc: func() {
-				suite.taskRepo.EXPECT().GetAllTasks(gomock.Any()).Return(nil, gorm.ErrInvalidDB)
+				suite.taskRepo.EXPECT().GetAllTasks(gomock.Any()).Return([]model.Task{}, nil)
 			},
-			expectedBody: `{"status":"error", "message": "couldn't get tasks"}`,
-			expectedCode: http.StatusInternalServerError,
+			expectedBody: `{"status":"success","tasks": []}`,
+			expectedCode: http.StatusOK,
 		},
 	}
 
@@ -131,8 +123,6 @@ func (suite *TaskHandlerTestSuite) TestGetAllTasks() {
 		err = json.Unmarshal([]byte(test.expectedBody), &expect)
 		suite.NoError(err, test.description)
 
-		log.Println(test.expectedBody)
-
 		suite.Assertions.Equal(expect, actual, test.description)
 	}
 }
@@ -155,16 +145,16 @@ func (suite *TaskHandlerTestSuite) TestCreateTask() {
 			},
 			requireAuth:  true,
 			body:         `{"message":"test"}`,
-			expectedBody: `{"status":"success", "message": "created new task"}`,
 			expectedCode: http.StatusOK,
+			expectedBody: `{"status":"success", "message": "task created"}`,
 		},
 		{
 			description:  "create a task with invalid body",
 			mockFunc:     func() {},
 			requireAuth:  true,
 			body:         `{"message": nil}`,
-			expectedBody: `{"status":"error", "message": "couldn't parse request body to create new task"}`,
 			expectedCode: http.StatusBadRequest,
+			expectedBody: `{"status":"error", "message": "Bad Request"}`,
 		},
 		{
 			description: "create a task with db error",
@@ -173,8 +163,19 @@ func (suite *TaskHandlerTestSuite) TestCreateTask() {
 			},
 			requireAuth:  true,
 			body:         `{"message":"test"}`,
-			expectedBody: `{"status":"error", "message": "couldn't create a new task"}`,
 			expectedCode: http.StatusInternalServerError,
+			expectedBody: `{"status":"error", "message": "invalid db"}`,
+		},
+		{
+			description:  "create a task with validation error",
+			mockFunc:     func() {},
+			requireAuth:  true,
+			body:         `{}`,
+			expectedCode: http.StatusBadRequest,
+			expectedBody: `{
+				"status":"error",
+				"message":"Failed input validation",
+				"validation_error":[{"field":"Message","reason":"required"}]}`,
 		},
 	}
 
@@ -192,7 +193,7 @@ func (suite *TaskHandlerTestSuite) TestCreateTask() {
 
 		// Assert
 		suite.NoError(err)
-		suite.Equal(test.expectedCode, res.StatusCode)
+		suite.Equal(test.expectedCode, res.StatusCode, test.description)
 
 		// Read the response body
 		body, err := io.ReadAll(res.Body)
@@ -200,8 +201,9 @@ func (suite *TaskHandlerTestSuite) TestCreateTask() {
 
 		// Assert the response body
 		type ResponseBody struct {
-			Status  string `json:"status"`
-			Message string `json:"message"`
+			Status           string                       `json:"status"`
+			Message          string                       `json:"message"`
+			ValidationErrors []middleware.ValidationError `json:"validation_error,omitempty"`
 		}
 
 		var actual, expect ResponseBody
@@ -245,7 +247,7 @@ func (suite *TaskHandlerTestSuite) TestUpdateTask() {
 			},
 			requireAuth:  true,
 			body:         `{"message":"new message", "completed": true}`,
-			expectedBody: `{"status":"success", "message": "task successfully updated"}`,
+			expectedBody: `{"status":"success", "message": "task updated"}`,
 			expectedCode: http.StatusOK,
 		},
 		{
@@ -255,7 +257,7 @@ func (suite *TaskHandlerTestSuite) TestUpdateTask() {
 			},
 			requireAuth:  true,
 			body:         `{"message":"new message", "completed": true}`,
-			expectedBody: `{"status":"error", "message": "no task found with id"}`,
+			expectedBody: `{"status":"error", "message": "record not found"}`,
 			expectedCode: http.StatusNotFound,
 		},
 		{
@@ -265,8 +267,8 @@ func (suite *TaskHandlerTestSuite) TestUpdateTask() {
 			},
 			requireAuth:  true,
 			body:         `{"message":"new message", "completed": true}`,
-			expectedBody: `{"status":"error", "message": "unable to process operation"}`,
-			expectedCode: http.StatusUnprocessableEntity,
+			expectedBody: `{"status":"error", "message": "invalid db"}`,
+			expectedCode: http.StatusInternalServerError,
 		},
 		{
 			description: "update a task with an invalid user",
@@ -280,7 +282,7 @@ func (suite *TaskHandlerTestSuite) TestUpdateTask() {
 			},
 			requireAuth:  true,
 			body:         `{"message":"new message", "completed": true}`,
-			expectedBody: `{"status":"error", "message": "unauthorized"}`,
+			expectedBody: `{"status":"error", "message": "Unauthorized"}`,
 			expectedCode: http.StatusUnauthorized,
 		},
 		{
@@ -291,8 +293,19 @@ func (suite *TaskHandlerTestSuite) TestUpdateTask() {
 			},
 			requireAuth:  true,
 			body:         `{"message":"new message", "completed": true}`,
-			expectedBody: `{"status":"error", "message": "couldn't update task"}`,
+			expectedBody: `{"status":"error", "message": "invalid db"}`,
 			expectedCode: http.StatusInternalServerError,
+		},
+		{
+			description:  "update a task with validation error",
+			mockFunc:     func() {},
+			requireAuth:  true,
+			body:         `{"message": ""}`,
+			expectedCode: http.StatusBadRequest,
+			expectedBody: `{
+				"status":"error",
+				"message":"Failed input validation",
+				"validation_error":[{"field":"Message","reason":"min=1"}]}`,
 		},
 	}
 
@@ -310,8 +323,8 @@ func (suite *TaskHandlerTestSuite) TestUpdateTask() {
 		res, err := suite.app.Test(req, -1)
 
 		// Assert
-		suite.NoError(err)
-		suite.Equal(test.expectedCode, res.StatusCode)
+		suite.NoError(err, test.description)
+		suite.Equal(test.expectedCode, res.StatusCode, test.description)
 
 		// Read the response body
 		body, err := io.ReadAll(res.Body)
@@ -319,8 +332,9 @@ func (suite *TaskHandlerTestSuite) TestUpdateTask() {
 
 		// Assert the response body
 		type ResponseBody struct {
-			Status  string `json:"status"`
-			Message string `json:"message"`
+			Status           string                       `json:"status"`
+			Message          string                       `json:"message"`
+			ValidationErrors []middleware.ValidationError `json:"validation_error,omitempty"`
 		}
 
 		var actual, expect ResponseBody
@@ -358,7 +372,7 @@ func (suite *TaskHandlerTestSuite) TestDeleteTask() {
 				suite.taskRepo.EXPECT().DeleteTask(&task).Return(nil)
 			},
 			requireAuth:  true,
-			expectedBody: `{"status":"success", "message": "task successfully deleted"}`,
+			expectedBody: `{"status":"success", "message": "task deleted"}`,
 			expectedCode: http.StatusOK,
 		},
 		{
@@ -367,7 +381,7 @@ func (suite *TaskHandlerTestSuite) TestDeleteTask() {
 				suite.taskRepo.EXPECT().GetTaskByID(task.ID).Return(nil, gorm.ErrRecordNotFound)
 			},
 			requireAuth:  true,
-			expectedBody: `{"status":"error", "message": "no task found with id"}`,
+			expectedBody: `{"status":"error", "message": "record not found"}`,
 			expectedCode: http.StatusNotFound,
 		},
 		{
@@ -376,8 +390,8 @@ func (suite *TaskHandlerTestSuite) TestDeleteTask() {
 				suite.taskRepo.EXPECT().GetTaskByID(task.ID).Return(nil, gorm.ErrInvalidDB)
 			},
 			requireAuth:  true,
-			expectedBody: `{"status":"error", "message": "unable to process operation"}`,
-			expectedCode: http.StatusUnprocessableEntity,
+			expectedBody: `{"status":"error", "message": "invalid db"}`,
+			expectedCode: http.StatusInternalServerError,
 		},
 		{
 			description: "delete a task with an invalid user",
@@ -390,7 +404,7 @@ func (suite *TaskHandlerTestSuite) TestDeleteTask() {
 				}, nil)
 			},
 			requireAuth:  true,
-			expectedBody: `{"status":"error", "message": "unauthorized"}`,
+			expectedBody: `{"status":"error", "message": "Unauthorized"}`,
 			expectedCode: http.StatusUnauthorized,
 		},
 		{
@@ -400,7 +414,7 @@ func (suite *TaskHandlerTestSuite) TestDeleteTask() {
 				suite.taskRepo.EXPECT().DeleteTask(&task).Return(gorm.ErrInvalidDB)
 			},
 			requireAuth:  true,
-			expectedBody: `{"status":"error", "message": "couldn't delete task"}`,
+			expectedBody: `{"status":"error", "message": "invalid db"}`,
 			expectedCode: http.StatusInternalServerError,
 		},
 	}
@@ -419,7 +433,7 @@ func (suite *TaskHandlerTestSuite) TestDeleteTask() {
 
 		// Assert
 		suite.NoError(err)
-		suite.Equal(test.expectedCode, res.StatusCode)
+		suite.Equal(test.expectedCode, res.StatusCode, test.description)
 
 		// Read the response body
 		body, err := io.ReadAll(res.Body)

@@ -14,7 +14,8 @@ func Config(key string) string {
 	// load .env file
 	err := godotenv.Load(".env")
 	if err != nil {
-		log.Warn().AnErr("error", err).Msg("Error loading .env file, using system env")
+		log.Warn().AnErr("error", err).
+			Msg("Unable to .env file, using system environment variables")
 	}
 
 	return os.Getenv(key)
