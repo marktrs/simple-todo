@@ -53,7 +53,6 @@ func (h *taskHandler) CreateTask(c *fiber.Ctx) error {
 	token := c.Locals("user").(*jwt.Token)
 
 	var req *model.CreateTaskRequest
-
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.ErrBadRequest
 	}
@@ -65,6 +64,7 @@ func (h *taskHandler) CreateTask(c *fiber.Ctx) error {
 	var task model.Task
 	task.ID = uuid.New().String() // generate a new id for the task
 	task.UserId = getUserIDFromToken(token)
+	task.Message = req.Message
 
 	if err := h.taskRepo.CreateTask(&task); err != nil {
 		return err

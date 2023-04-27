@@ -9,11 +9,11 @@ import (
 
 // User struct
 type User struct {
-	ID        string    `gorm:"uniqueIndex:,primaryKey" json:"id"`
+	ID        string    `gorm:"primaryKey,index" json:"id"`
 	CreatedAt time.Time `gorm:"autoCreateTime,sort:desc" json:"created_at"`
 	UpdatedAt time.Time `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt gorm.DeletedAt
-	Username  string `gorm:"uniqueIndex,not null" json:"username"`
+	Username  string `gorm:"uniqueIndex;not null" json:"username"`
 	Password  string `gorm:"not null" json:"password"`
 	Tasks     []Task `gorm:"foreignKey:user_id" json:"tasks"`
 }

@@ -9,14 +9,14 @@ import (
 
 // Task struct
 type Task struct {
-	ID          string         `gorm:"uniqueIndex:,primaryKey" json:"id"`
+	ID          string         `gorm:"primaryKey,index" json:"id"`
 	CreatedAt   time.Time      `gorm:"autoCreateTime,sort:desc" json:"created_at"`
 	UpdatedAt   time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at"`
-	Message     string         `gorm:"index:,not null" json:"message"`
-	Completed   bool           `gorm:"index:,not null" json:"completed"`
+	Message     string         `gorm:"index,not null" json:"message"`
+	Completed   bool           `gorm:"index,not null" json:"completed"`
 	CompletedAt time.Time      `gorm:"default:null" json:"completed_at"`
-	UserId      string         `gorm:"index:,not null" json:"user_id"`
+	UserId      string         `gorm:"index,not null" json:"user_id"`
 }
 
 type ListTaskResponse struct {

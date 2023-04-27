@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/justinas/alice"
+	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/marktrs/simple-todo/logger"
-	"github.com/rs/zerolog/hlog"
 )
 
 type ResponseRecorder struct {
@@ -15,34 +15,35 @@ type ResponseRecorder struct {
 	Body       []byte
 }
 
-func HTTPLogger(handler http.Handler) http.Handler {
-	c := alice.New()
-	c = c.Append(hlog.NewHandler(logger.Log))
-	c = c.Append(hlog.RequestIDHandler("request_id", "Request-Id"))
-	h := c.Then(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		startTime := time.Now()
-		rec := &ResponseRecorder{
-			ResponseWriter: w,
-			StatusCode:     http.StatusOK,
-		}
+func (r *ResponseRecorder) WriteHeader(statusCode int) {
+	r.ResponseWriter.WriteHeader(statusCode)
+	r.StatusCode = statusCode
+}
 
-		handler.ServeHTTP(rec, r)
-		duration := time.Since(startTime)
+func HandleHTTPLogger(c *fiber.Ctx) error {
+	startTime := time.Now()
+	logger := logger.Log
+	reqId := uuid.New().String()
 
-		logger := hlog.FromRequest(r).Info()
-		if rec.StatusCode != http.StatusOK {
-			logger = hlog.FromRequest(r).Error().Bytes("body", rec.Body)
-		}
+	rq := c.Request()
+	rs := c.Response()
 
-		logger.
-			Str("protocol", "http").
-			Str("method", r.Method).
-			Str("path", r.RequestURI).
-			Int("status_code", rec.StatusCode).
-			Str("status_text", http.StatusText(rec.StatusCode)).
-			Dur("duration", duration).
-			Msg("received a HTTP request")
-	}))
+	// Add request id to request header
+	rq.Header.Set("RequestID", reqId)
+	rq.Header.Set("Start", startTime.String())
 
-	return h
+	// Add request id to response header
+	c.Set("Request-ID", reqId)
+
+	logger.
+		Info().
+		Str("start", startTime.String()).
+		Str("request_id", reqId).
+		Str("protocol", "http").
+		Str("method", string(rq.Header.Method())).
+		Str("path", string(rq.RequestURI())).
+		Str("status_text", http.StatusText(rs.StatusCode())).
+		Msg("received a HTTP request")
+
+	return c.Next()
 }

@@ -7,6 +7,9 @@ test-unit:
 test-coverage:
 	go test $(go list ./...) -race -covermode atomic -coverprofile=coverage.out ./...
 
+test-report:
+	go tool cover -html=coverage.out
+
 mock:
 	mockgen -source=repository/user.go \
 		-package testutil \
