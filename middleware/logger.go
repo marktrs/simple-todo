@@ -20,7 +20,7 @@ func (r *ResponseRecorder) WriteHeader(statusCode int) {
 	r.StatusCode = statusCode
 }
 
-func HandleFiberCtxLogger(c *fiber.Ctx) error {
+func HandleHTTPLogger(c *fiber.Ctx) error {
 	startTime := time.Now()
 	logger := logger.Log
 	reqId := uuid.New().String()

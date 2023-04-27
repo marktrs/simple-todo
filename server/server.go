@@ -47,7 +47,7 @@ func New() Server {
 	}))
 
 	// Logger middleware for all routes
-	app.Use(middleware.HandleFiberCtxLogger)
+	app.Use(middleware.HandleHTTPLogger)
 
 	return &server{
 		app:    app,
