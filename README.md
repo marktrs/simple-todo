@@ -47,10 +47,58 @@ To build from source without docker:
 
 ## Usage
 
-> Using docker
+Using docker
+
+1. Start running services using docker compose
 
 ```sh
 $ docker compose up -d --build
+```
+
+You should see the following output:
+
+```shell
+[+] Running 4/4
+ ⠿ Network simple-todo_default   Created                                                                                                                                      0.0s
+ ⠿ Container postgres            Started                                                                                                                                      0.4s
+ ⠿ Container simple-todo-api     Started                                                                                                                                      0.6s
+ ⠿ Container simple-todo-client  Started
+```
+
+2. Inspect server logs to ensure the server is running
+
+```sh
+$ docker logs -f simple-todo-api
+```
+
+You should see the following output:
+
+```shell
+{"level":"info","time":"2023-04-27T09:09:37Z","message":"seeding user data..."}
+{"level":"info","time":"2023-04-27T09:09:45Z","message":"server is listening on port 3000..."}
+```
+
+3. Checkout /metrics on [http://localhost:3000/metrics](http://localhost:3000/metrics) for server metrics and /health for server health check
+
+```sh
+curl --location 'http://localhost:3000/api/health'
+```
+
+4. Then navigate to web application on [http://localhost:8080/](http://localhost:8080/)
+5. login with default user or create a new one on registration page [http://localhost:8080/register](http://localhost:8080/register)
+
+```sh
+username: test01
+password: 1111
+
+username: test02
+password: 2222
+
+username: test03
+password: 3333
+
+username: test04
+password: 4444
 ```
 
 Stop running services
@@ -61,23 +109,24 @@ $ docker compose down
 
 ### Run Test
 
-Unit testing from source
+Run unit testing from source
 
 API server
 
-```
+```sh
 make test-unit
 ```
 
 or get test coverage profile
 
-```
+```sh
 make test-coverage
+make test-report
 ```
 
 Sveltekit - client application
 
-```
+```sh
 cd client/
 npm install -g pnpm
 pnpm install
@@ -114,72 +163,68 @@ Tools usage in this project:
 │   └── config.go
 ├── coverage.out
 ├── database
-│   ├── connector.go
-│   ├── database.go
-│   ├── migration.go
-│   └── seeder.go
+│   └── ...
 ├── docker-compose.yml
 ├── go.mod
 ├── go.sum
 ├── handler
-│   ├── auth.go
-│   ├── auth_test.go
-│   ├── health.go
-│   ├── health_test.go
-│   ├── task.go
-│   ├── task_test.go
-│   ├── user.go
-│   └── user_test.go
+│   └── ...
 ├── integration_test.go
 ├── logger
-│   └── logger.go
+│   └── ...
 ├── middleware
-│   ├── auth.go
-│   ├── auth_test.go
-│   ├── error.go
-│   ├── error_test.go
-│   └── logger.go
+│   └── ...
 ├── model
-│   ├── task.go
-│   └── user.go
+│   └── ...
 ├── repository
-│   ├── task.go
-│   └── user.go
+│   └── ...
 ├── router
-│   └── router.go
+│   └── ...
 ├── server
-│   └── server.go
+│   └── ...
 ├── start.sh
 ├── temp
 ├── testutil
 │   └── mocks
 │       └── repository
-│           ├── task.go
-│           └── user.go
+│           └── ...
 └── main.go
 ```
 
-apidoc: Contains OpenAPI specification and Swagger JSON files
-client: Contains files for the SvelteKit web client application, including dependencies and tests
-config: Contains configuration files for the project
-database: Contains files related to the database, including connector, migration, and seeder files
-handler: Contains files that define the HTTP request handlers for each route of the API
-logger: Contains files related to logging and log management
-middleware: Contains middleware functions for the API, including authentication, error handling, and logging
-model: Contains data transfer object and schema that map to the application's database tables
-repository: Contains implementations of data access layer for the CRUD operations for each entity in the application
-router: Contains the router configuration for the API
-server: Contains the server initialization and starting code
-testutil: Contains mock implementations for repositories used in testing
-temp: Contains temporary log files
-root directory: Contains miscellaneous files, including Makefile, Dockerfile, integration tests, and shell scripts
+`apidoc`: Contains OpenAPI specification and Swagger JSON files
+
+`client`: Contains files for the SvelteKit web client application, including dependencies and tests
+
+`config`: Contains configuration files for the project
+
+`database`: Contains files related to the database, including connector, migration, and seeder files
+
+`handler`: Contains files that define the HTTP request handlers for each route of the API
+
+`logger`: Contains files related to logging and log management
+
+`middleware`: Contains middleware functions for the API, including authentication, error handling, and logging
+
+`model`: Contains data transfer object and schema that map to the application's database tables
+
+`repository`: Contains implementations of data access layer for the CRUD operations for each entity in the application
+
+`router`: Contains the router configuration for the API
+
+`server`: Contains the server initialization and starting code
+
+`testutil`: Contains mock implementations for repositories used in testing
+
+`temp`: Contains temporary log files
+
+`root directory`: Contains miscellaneous files, including Makefile, Dockerfile, integration tests, and shell scripts
 
 ## Future works
 
-- More coverage test % beside the core functionalities
-- Caching strategy
-- gRPC to provide more efficient binary protocol, which can result in faster and more efficient communication between client and server
-- An endpoint to serve API document as HTML
+- `Testing` More coverage test % beside the core functionalities
+- `Caching` Caching strategy
+- `gRPC` to provide more efficient binary protocol, which can result in faster and more efficient communication between client and server
+- `document` An endpoint to serve API document as HTML
 
 ## Notes
 
