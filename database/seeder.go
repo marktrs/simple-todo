@@ -46,7 +46,7 @@ func seedUserData() error {
 
 		if err := DB.FirstOrCreate(&user).Error; err != nil {
 			if errors.Is(err, gorm.ErrDuplicatedKey) {
-				log.Warn().Msg("user already exists")
+				log.Warn().Msg("users already exists, skipping...")
 				break
 			}
 			log.Fatal().AnErr("error", err).Msg("failed to seed user data")

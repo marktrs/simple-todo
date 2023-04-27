@@ -5,7 +5,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	"github.com/gofiber/adaptor/v2"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -33,6 +32,9 @@ func New() Server {
 		ErrorHandler:          middleware.HandleHTTPError,
 	})
 
+	// Enable HTTP caching to intercept responses and cache them
+	// app.Use(cache.New())
+
 	// Setup recover middleware to recovers from panics anywhere
 	// in the stack chain and handles the control to the centralized ErrorHandler.
 	app.Use(recover.New())
@@ -45,7 +47,7 @@ func New() Server {
 	}))
 
 	// Logger middleware for all routes
-	app.Use(adaptor.HTTPMiddleware(middleware.HTTPLogger))
+	app.Use(middleware.HandleFiberCtxLogger)
 
 	return &server{
 		app:    app,

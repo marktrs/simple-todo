@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
+	"github.com/marktrs/simple-todo/logger"
 	"gorm.io/gorm"
 )
 
@@ -27,6 +29,35 @@ type ErrorResponse struct {
 
 // HandleHTTPError - custom handle http errors message
 func HandleHTTPError(c *fiber.Ctx, err error) error {
+	header := c.GetReqHeaders()
+
+	rq := c.Request()
+	rs := c.Response()
+
+	logger.Log.
+		Error().Err(err).
+		Str("request_id", c.GetRespHeader("Request-ID")).
+		Str("protocol", "http").
+		Str("method", string(rq.Header.Method())).
+		Str("path", rq.URI().String()).
+		Int("status_code", rs.StatusCode()).
+		Str("status_text", http.StatusText(rs.StatusCode())).
+		Msg("error while handling request")
+
+	startTime, parseErr := time.Parse(time.Layout, header["Start"])
+
+	if parseErr != nil {
+		logger.Log.Error().Err(err).
+			Str("request_id", c.GetRespHeader("Request-ID")).
+			Msg("error while parsing request start time")
+	} else {
+		duration := time.Since(startTime)
+		logger.Log.Error().
+			Str("duration", duration.String()).
+			Str("request_id", c.GetRespHeader("Request-ID")).
+			Msg("request duration")
+	}
+
 	body := ErrorResponse{
 		Status:  "error",
 		Message: fiber.ErrInternalServerError.Message,
@@ -65,7 +96,6 @@ func HandleHTTPError(c *fiber.Ctx, err error) error {
 
 func describeValidationError(verr validator.ValidationErrors) []ValidationError {
 	errs := []ValidationError{}
-
 	for _, f := range verr {
 		err := f.ActualTag()
 		if f.Param() != "" {
