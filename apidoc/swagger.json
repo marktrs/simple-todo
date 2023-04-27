@@ -1,0 +1,622 @@
+{
+  "swagger": "2.0",
+  "info": { "contact": {}, "title": "simple-todo", "version": "1.0.0" },
+  "host": "localhost",
+  "basePath": "/",
+  "schemes": ["http"],
+  "paths": {
+    "/api/auth/login": {
+      "post": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "password": { "example": "1111", "type": "string" },
+                "username": { "example": "test01", "type": "string" }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Login",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": { "example": "login success", "type": "string" },
+                "status": { "example": "success", "type": "string" },
+                "token": {
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4MDEzMTQsInVzZXJfaWQiOiI1YmRlMjIxMy0xMjExLTQ1MDEtYjY2Yi0wOWE3NWI0MGMxMWYiLCJ1c2VybmFtZSI6InRlc3QwMSJ9.-1IYuB53Y3jyCwZ0lGNfEL4xdt3tpQTJrb-8wZH3zlY",
+                  "type": "string"
+                },
+                "user": {
+                  "properties": {
+                    "DeletedAt": { "example": null, "x-nullable": true },
+                    "created_at": {
+                      "example": "2023-04-27T03:44:42.843778+07:00",
+                      "type": "string"
+                    },
+                    "id": {
+                      "example": "5bde2213-1211-4501-b66b-09a75b40c11f",
+                      "type": "string"
+                    },
+                    "password": {
+                      "example": "$2a$14$xhrlRSxbCgGi5Hfj7b/i1e6/UfQoXiY4/2mllEkzybY18cNo2qdbG",
+                      "type": "string"
+                    },
+                    "tasks": { "example": null, "x-nullable": true },
+                    "updated_at": {
+                      "example": "2023-04-27T03:44:42.843778+07:00",
+                      "type": "string"
+                    },
+                    "username": { "example": "test01", "type": "string" }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Login",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "example": "Failed input validation",
+                  "type": "string"
+                },
+                "status": { "example": "error", "type": "string" },
+                "validation_error": {
+                  "example": [
+                    { "field": "Username", "reason": "min=4" },
+                    { "field": "Password", "reason": "min=4" }
+                  ],
+                  "items": {
+                    "properties": {
+                      "field": { "example": "Username", "type": "string" },
+                      "reason": { "example": "min=4", "type": "string" }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Login",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": { "example": "Unauthorized", "type": "string" },
+                "status": { "example": "error", "type": "string" }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "tags": ["Auth"],
+        "description": "Login",
+        "operationId": "login",
+        "summary": "Login"
+      }
+    },
+    "/api/health": {
+      "get": {
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Health check",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": { "example": "API is running", "type": "string" },
+                "status": { "example": "success", "type": "string" }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "description": "Health check",
+        "operationId": "healthCheck",
+        "summary": "Health check"
+      }
+    },
+    "/api/tasks": {
+      "get": {
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Get all tasks",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "status": { "example": "success", "type": "string" },
+                "tasks": {
+                  "example": [
+                    {
+                      "completed": false,
+                      "completed_at": "0001-01-01T00:00:00Z",
+                      "created_at": "2023-04-27T03:51:23.926139+07:00",
+                      "deleted_at": null,
+                      "id": "f7b63290-f884-4a1d-97e0-9175fc134e83",
+                      "message": "",
+                      "updated_at": "2023-04-27T03:51:23.926139+07:00",
+                      "user_id": "5bde2213-1211-4501-b66b-09a75b40c11f"
+                    },
+                    {
+                      "completed": false,
+                      "completed_at": "0001-01-01T00:00:00Z",
+                      "created_at": "2023-04-27T03:50:01.646019+07:00",
+                      "deleted_at": null,
+                      "id": "c245040a-5381-4c84-ac54-23b16c45c81c",
+                      "message": "",
+                      "updated_at": "2023-04-27T03:50:01.646019+07:00",
+                      "user_id": "5bde2213-1211-4501-b66b-09a75b40c11f"
+                    }
+                  ],
+                  "items": {
+                    "properties": {
+                      "completed": { "example": false, "type": "boolean" },
+                      "completed_at": {
+                        "example": "0001-01-01T00:00:00Z",
+                        "type": "string"
+                      },
+                      "created_at": {
+                        "example": "2023-04-27T03:51:23.926139+07:00",
+                        "type": "string"
+                      },
+                      "deleted_at": { "example": null, "x-nullable": true },
+                      "id": {
+                        "example": "f7b63290-f884-4a1d-97e0-9175fc134e83",
+                        "type": "string"
+                      },
+                      "message": { "example": "", "type": "string" },
+                      "updated_at": {
+                        "example": "2023-04-27T03:51:23.926139+07:00",
+                        "type": "string"
+                      },
+                      "user_id": {
+                        "example": "5bde2213-1211-4501-b66b-09a75b40c11f",
+                        "type": "string"
+                      }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "tags": ["Tasks"],
+        "description": "Get all tasks",
+        "operationId": "getAllTasks",
+        "summary": "Get all tasks"
+      },
+      "post": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": { "message": { "example": "", "type": "string" } },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Create task",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": { "example": "task created", "type": "string" },
+                "status": { "example": "success", "type": "string" },
+                "task": {
+                  "properties": {
+                    "completed": { "example": false, "type": "boolean" },
+                    "completed_at": {
+                      "example": "0001-01-01T00:00:00Z",
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "example": "2023-04-27T03:50:01.646019+07:00",
+                      "type": "string"
+                    },
+                    "deleted_at": { "example": null, "x-nullable": true },
+                    "id": {
+                      "example": "c245040a-5381-4c84-ac54-23b16c45c81c",
+                      "type": "string"
+                    },
+                    "message": { "example": "", "type": "string" },
+                    "updated_at": {
+                      "example": "2023-04-27T03:50:01.646019+07:00",
+                      "type": "string"
+                    },
+                    "user_id": {
+                      "example": "5bde2213-1211-4501-b66b-09a75b40c11f",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Create task",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "example": "Failed input validation",
+                  "type": "string"
+                },
+                "status": { "example": "error", "type": "string" },
+                "validation_error": {
+                  "example": [{ "field": "Message", "reason": "max=120" }],
+                  "items": {
+                    "properties": {
+                      "field": { "example": "Message", "type": "string" },
+                      "reason": { "example": "max=120", "type": "string" }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "tags": ["Tasks"],
+        "description": "Create task",
+        "operationId": "createTask",
+        "summary": "Create task"
+      }
+    },
+    "/api/tasks/{task_id}": {
+      "parameters": [
+        { "in": "path", "name": "task_id", "required": true, "type": "string" }
+      ],
+      "delete": {
+        "produces": ["application/json"],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Delete a task",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": { "example": "task deleted", "type": "string" },
+                "status": { "example": "success", "type": "string" },
+                "task": {
+                  "properties": {
+                    "completed": { "example": true, "type": "boolean" },
+                    "completed_at": {
+                      "example": "0001-01-01T06:42:04+06:42",
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "example": "2023-04-27T03:51:23.926139+07:00",
+                      "type": "string"
+                    },
+                    "deleted_at": {
+                      "example": "2023-04-27T03:52:26.689946+07:00",
+                      "type": "string"
+                    },
+                    "id": {
+                      "example": "f7b63290-f884-4a1d-97e0-9175fc134e83",
+                      "type": "string"
+                    },
+                    "message": {
+                      "example": "Use the virtual IB array, then you can quantify the solid state card!",
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "example": "2023-04-27T03:51:47.363191+07:00",
+                      "type": "string"
+                    },
+                    "user_id": {
+                      "example": "5bde2213-1211-4501-b66b-09a75b40c11f",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Delete a task",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": { "example": "Unauthorized", "type": "string" },
+                "status": { "example": "error", "type": "string" }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "tags": ["Tasks"],
+        "description": "Delete a task",
+        "operationId": "deleteATask",
+        "summary": "Delete a task"
+      },
+      "put": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "completed": { "example": true, "type": "boolean" },
+                "message": { "example": "", "type": "string" }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Update a task",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": { "example": "task updated", "type": "string" },
+                "status": { "example": "success", "type": "string" },
+                "task": {
+                  "properties": {
+                    "completed": { "example": true, "type": "boolean" },
+                    "completed_at": {
+                      "example": "0001-01-01T00:00:00Z",
+                      "type": "string"
+                    },
+                    "created_at": {
+                      "example": "2023-04-27T03:51:23.926139+07:00",
+                      "type": "string"
+                    },
+                    "deleted_at": { "example": null, "x-nullable": true },
+                    "id": {
+                      "example": "f7b63290-f884-4a1d-97e0-9175fc134e83",
+                      "type": "string"
+                    },
+                    "message": {
+                      "example": "Use the virtual IB array, then you can quantify the solid state card!",
+                      "type": "string"
+                    },
+                    "updated_at": {
+                      "example": "2023-04-27T03:51:47.363191+07:00",
+                      "type": "string"
+                    },
+                    "user_id": {
+                      "example": "5bde2213-1211-4501-b66b-09a75b40c11f",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Update a task",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "example": "Failed input validation",
+                  "type": "string"
+                },
+                "status": { "example": "error", "type": "string" },
+                "validation_error": {
+                  "example": [{ "field": "Message", "reason": "min=1" }],
+                  "items": {
+                    "properties": {
+                      "field": { "example": "Message", "type": "string" },
+                      "reason": { "example": "min=1", "type": "string" }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "tags": ["Tasks"],
+        "description": "Update a task",
+        "operationId": "updateATask",
+        "summary": "Update a task"
+      }
+    },
+    "/api/users": {
+      "post": {
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "properties": {
+                "password": { "example": "5555", "type": "string" },
+                "username": { "example": "test05", "type": "string" }
+              },
+              "type": "object"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Create user",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": { "example": "Created user", "type": "string" },
+                "status": { "example": "success", "type": "string" },
+                "token": {
+                  "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4MDExMDgsInVzZXJfaWQiOiI3NWIxZjVjYi03MTJkLTQxMjYtYmFjZC1kMjJlNWVhZjAzMGYiLCJ1c2VybmFtZSI6InRlc3QwNSJ9.BDF62foGs07GZ2f-FNfMnnW6HqaTxkmI0xqKdkTVuT8",
+                  "type": "string"
+                },
+                "user": {
+                  "properties": {
+                    "DeletedAt": { "example": null, "x-nullable": true },
+                    "created_at": {
+                      "example": "2023-04-27T03:45:08.660779+07:00",
+                      "type": "string"
+                    },
+                    "id": {
+                      "example": "75b1f5cb-712d-4126-bacd-d22e5eaf030f",
+                      "type": "string"
+                    },
+                    "password": {
+                      "example": "$2a$14$VQWEEWcTaE0ZUHoCSkH3reiDW6HvR1WNJmglKWOsx/FStPJiuxIOi",
+                      "type": "string"
+                    },
+                    "tasks": { "example": null, "x-nullable": true },
+                    "updated_at": {
+                      "example": "2023-04-27T03:45:08.660779+07:00",
+                      "type": "string"
+                    },
+                    "username": { "example": "test05", "type": "string" }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            }
+          },
+          "400": {
+            "description": "Create user",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "example": "Failed input validation",
+                  "type": "string"
+                },
+                "status": { "example": "error", "type": "string" },
+                "validation_error": {
+                  "example": [{ "field": "Password", "reason": "min=4" }],
+                  "items": {
+                    "properties": {
+                      "field": { "example": "Password", "type": "string" },
+                      "reason": { "example": "min=4", "type": "string" }
+                    },
+                    "type": "object"
+                  },
+                  "type": "array"
+                }
+              },
+              "type": "object"
+            }
+          }
+        },
+        "tags": ["User"],
+        "description": "Create user",
+        "operationId": "createUser",
+        "summary": "Create user"
+      }
+    }
+  },
+  "tags": [{ "name": "User" }, { "name": "Auth" }, { "name": "Tasks" }]
+}
