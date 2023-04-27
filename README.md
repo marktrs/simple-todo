@@ -1,31 +1,27 @@
-# Project Title
-
-One or two sentences describing the purpose of your project.
+# Simple Todo
 
 ## Table of Contents
 
-- [Project Title](#project-title)
-  - [Table of Contents](#table-of-contents)
-  - [About the Project](#about-the-project)
-  - [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-  - [Usage](#usage)
-  - [Contributing](#contributing)
-  - [License](#license)
-  - [Contact](#contact)
+- [About the Project](#about-the-project)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
 
-## About the Project
+## About the project
 
-The purpose of the project is to create a robust APIs and web client application for user task management that allows users to manage their tasks with comprehensive authorization.
+The purpose of the project is to create robust APIs server and web client application for user task management that allows users to manage their tasks with comprehensive authorization.
+
+## API documentation
 
 For full API document [please checkout this section](https://github.com/marktrs/simple-todo/tree/main/apidoc)
 
-Web application
-
 ## Getting Started
 
-To start using this application on local hosted server you need to clone this repository along with [the submodule repository](https://github.com/marktrs/simple-todo-client)
+To start using this application on local hosted server you need to clone this repository along with [the submodule repository](https://github.com/marktrs/simple-todo-client) where the web client application is located.
 
 ```
 git clone --recurse-submodules https://github.com/marktrs/simple-todo.git
