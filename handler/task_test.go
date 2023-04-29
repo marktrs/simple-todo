@@ -11,6 +11,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang/mock/gomock"
+	"github.com/marktrs/simple-todo/handler"
 	"github.com/marktrs/simple-todo/middleware"
 	"github.com/marktrs/simple-todo/model"
 	"github.com/marktrs/simple-todo/router"
@@ -27,10 +28,10 @@ type TaskHandlerTestSuite struct {
 	taskRepo *repoMock.MockTaskRepository
 	userRepo *repoMock.MockUserRepository
 	user     *model.User
+	token    string
 }
 
 var testJWTSigningKey = "secret"
-var tokenWithClaims = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI3MDAyMDksInVzZXJfaWQiOiJ0ZXN0X2lkIiwidXNlcm5hbWUiOiJ0ZXN0In0.XiOkXAVzZ5hW5DbviA2juzPRVuaBEuq19d1dMlVC2uU"
 
 func (suite *TaskHandlerTestSuite) SetupTest() {
 	// Set environment secret for JWT signing
@@ -47,6 +48,10 @@ func (suite *TaskHandlerTestSuite) SetupTest() {
 	suite.taskRepo = repoMock.NewMockTaskRepository(suite.ctrl)
 	suite.userRepo = repoMock.NewMockUserRepository(suite.ctrl)
 	router.SetupRoutes(suite.app, suite.userRepo, suite.taskRepo)
+
+	var err error
+	suite.token, err = handler.GenerateToken(suite.user.ID, suite.user.Username)
+	suite.NoError(err)
 }
 
 func (suite *TaskHandlerTestSuite) TearDownTest() {
@@ -93,7 +98,7 @@ func (suite *TaskHandlerTestSuite) TestGetAllTasks() {
 		req := httptest.NewRequest(http.MethodGet, "/api/tasks", nil)
 
 		if test.requireAuth {
-			req.Header.Add("Authorization", "Bearer "+tokenWithClaims)
+			req.Header.Add("Authorization", "Bearer "+suite.token)
 		}
 
 		test.mockFunc()
@@ -183,7 +188,7 @@ func (suite *TaskHandlerTestSuite) TestCreateTask() {
 		req := httptest.NewRequest(http.MethodPost, "/api/tasks", strings.NewReader(test.body))
 		req.Header.Set("Content-Type", "application/json")
 		if test.requireAuth {
-			req.Header.Add("Authorization", "Bearer "+tokenWithClaims)
+			req.Header.Add("Authorization", "Bearer "+suite.token)
 		}
 
 		test.mockFunc()
@@ -314,7 +319,7 @@ func (suite *TaskHandlerTestSuite) TestUpdateTask() {
 		req.Header.Set("Content-Type", "application/json")
 
 		if test.requireAuth {
-			req.Header.Add("Authorization", "Bearer "+tokenWithClaims)
+			req.Header.Add("Authorization", "Bearer "+suite.token)
 		}
 
 		test.mockFunc()
@@ -423,7 +428,7 @@ func (suite *TaskHandlerTestSuite) TestDeleteTask() {
 		req := httptest.NewRequest(http.MethodDelete, "/api/tasks/"+task.ID, nil)
 
 		if test.requireAuth {
-			req.Header.Add("Authorization", "Bearer "+tokenWithClaims)
+			req.Header.Add("Authorization", "Bearer "+suite.token)
 		}
 
 		test.mockFunc()

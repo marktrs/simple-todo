@@ -8,16 +8,19 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/marktrs/simple-todo/handler"
 	"github.com/marktrs/simple-todo/middleware"
 	"github.com/stretchr/testify/assert"
 )
 
 var testJWTSigningKey = "secret"
-var token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.XbPfbIHMI6arZ3Y922BhjWgQzWXcXNrz0ogtVhfEd2o"
 
 func TestProtected(t *testing.T) {
 	// Set environment secret for JWT signing
 	assert.NoError(t, os.Setenv("SECRET", testJWTSigningKey))
+
+	token, err := handler.GenerateToken("id", "username")
+	assert.NoError(t, err)
 
 	app := fiber.New()
 
@@ -91,12 +94,12 @@ func TestJWTMalformed(t *testing.T) {
 	})
 
 	req := httptest.NewRequest("GET", "/ok", nil)
-	req.Header.Add("Authorization", "Bearer "+token+"malformed")
+	req.Header.Add("Authorization", "Bearer "+"malformed-token")
 
 	// Act
 	resp, err := app.Test(req, -1)
 
 	// Assert
 	assert.NoError(t, err)
-	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
+	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 }
