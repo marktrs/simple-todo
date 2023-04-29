@@ -103,6 +103,34 @@ Stop running services
 $ docker compose down
 ```
 
+Or you can run the server and client application from source, you need postgres database running on your local machine with a user configuration from the [environment variable file](https://github.com/marktrs/simple-todo/blob/main/.env.example)
+
+1. Create environment variable file with: `touch .env` for configuration (in project root).
+
+```sh
+DB_HOST=localhost
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+DB_NAME=postgres
+SECRET=6f7fa8bb-78bb-436c-bef8-554c3e35a175
+```
+
+2. Start running API server
+
+```sh
+$ go run .
+```
+
+3. Start running client application
+
+```sh
+$ cd client/
+$ npm install -g pnpm
+$ pnpm install
+$ pnpm dev
+```
+
 ### Run Test
 
 Run unit testing from source

@@ -22,7 +22,6 @@ FROM alpine:3.16 as release
 WORKDIR /app
 # Copy the binary to the production image from the builder stage.
 COPY --from=builder /app/main .
-COPY .env .
 COPY start.sh .
 COPY wait-for.sh .
 

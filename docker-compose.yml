@@ -30,6 +30,11 @@ services:
       - postgres
     environment:
       - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=postgres
+      - SECRET=6f7fa8bb-78bb-436c-bef8-554c3e35a175
 
   simple-todo-client:
     container_name: 'simple-todo-client'
