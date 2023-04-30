@@ -1,947 +1,440 @@
 openapi: 3.0.3
 info:
-  title: gitsast
+  title: simple-todo
   version: 1.0.0
   contact: {}
 servers:
-  - url: ""
+  - url: http://localhost
 paths:
-  /api/v1/repository:
-    get:
-      summary: list repository
-      description: list repository
-      operationId: listRepository
-      parameters:
-        - name: name
-          in: query
-          schema:
-            type: string
-            example: quo
-        - name: remote_url
-          in: query
-          schema:
-            type: string
-            example: github.com/Alexandrine_Waters/dolor-aliquam-minus
-        - name: limit
-          in: query
-          schema:
-            type: string
-            example: "2"
-        - name: offset
-          in: query
-          schema:
-            type: string
-            example: "1"
-      requestBody:
-        content:
-          text/plain:
-            example: ""
-      responses:
-        "200":
-          description: list repository
-          headers:
-            Content-Length:
-              schema:
-                type: string
-                example: "678"
-            Date:
-              schema:
-                type: string
-                example: Wed, 22 Feb 2023 05:00:17 GMT
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  repositories:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        created_at:
-                          type: string
-                          example: "2023-02-22T04:58:59.794583Z"
-                        id:
-                          type: string
-                          example: 7e898d91-0cf8-4c03-a7ec-67f2f0a0f034
-                        name:
-                          type: string
-                          example: voluptatibus
-                        remote_url:
-                          type: string
-                          example: https://github.com/mdlayher/wireguard_exporter.git
-                        updated_at:
-                          type: string
-                          example: "2023-02-22T04:58:59.794583Z"
-                    example:
-                      - created_at: "2023-02-22T04:58:59.794583Z"
-                        id: 7e898d91-0cf8-4c03-a7ec-67f2f0a0f034
-                        name: voluptatibus
-                        remote_url: https://github.com/mdlayher/wireguard_exporter.git
-                        updated_at: "2023-02-22T04:58:59.794583Z"
-                      - created_at: "2023-02-22T04:59:31.941957Z"
-                        id: 235025e4-73d7-4294-8ecd-06d9a71d2015
-                        name: expedita
-                        remote_url: https://github.com/mdlayher/wireguard_exporter.git
-                        updated_at: "2023-02-22T04:59:31.941957Z"
-                      - created_at: "2023-02-22T04:59:45.723021Z"
-                        id: bb42beea-4118-4885-8f88-f291aa0fe790
-                        name: atque
-                        remote_url: https://github.com/mdlayher/wireguard_exporter.git
-                        updated_at: "2023-02-22T04:59:45.723021Z"
-                  total:
-                    type: number
-                    example: 3
-              examples:
-                list repository:
-                  value:
-                    repositories:
-                      - created_at: "2023-02-22T04:58:59.794583Z"
-                        id: 7e898d91-0cf8-4c03-a7ec-67f2f0a0f034
-                        name: voluptatibus
-                        remote_url: https://github.com/mdlayher/wireguard_exporter.git
-                        updated_at: "2023-02-22T04:58:59.794583Z"
-                      - created_at: "2023-02-22T04:59:31.941957Z"
-                        id: 235025e4-73d7-4294-8ecd-06d9a71d2015
-                        name: expedita
-                        remote_url: https://github.com/mdlayher/wireguard_exporter.git
-                        updated_at: "2023-02-22T04:59:31.941957Z"
-                      - created_at: "2023-02-22T04:59:45.723021Z"
-                        id: bb42beea-4118-4885-8f88-f291aa0fe790
-                        name: atque
-                        remote_url: https://github.com/mdlayher/wireguard_exporter.git
-                        updated_at: "2023-02-22T04:59:45.723021Z"
-                    total: 3
+  /api/users:
     post:
-      summary: add repository
-      description: add repository
-      operationId: addRepository
+      tags:
+        - User
+      summary: Create user
+      description: Create user
+      operationId: createUser
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                name:
+                password:
                   type: string
-                  example: ""
-                remote_url:
+                  example: '5555'
+                username:
                   type: string
-                  example: https://github.com/mdlayher/wireguard_exporter
+                  example: test05
             example:
-              name: ""
-              remote_url: https://github.com/mdlayher/wireguard_exporter
+              password: '5555'
+              username: test05
       responses:
-        "200":
-          description: add repository
+        '200':
+          description: Create user
           headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
             Content-Length:
               schema:
                 type: string
-                example: "213"
+                example: '526'
             Date:
               schema:
                 type: string
-                example: Wed, 22 Feb 2023 04:59:45 GMT
+                example: Wed, 26 Apr 2023 20:45:08 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4oqkv0rd0p0p57a3vg
+            Vary:
+              schema:
+                type: string
+                example: Origin
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  created_at:
+                  message:
                     type: string
-                    example: "2023-02-22T04:59:45.723021Z"
-                  id:
-                    type: string
-                    example: bb42beea-4118-4885-8f88-f291aa0fe790
-                  name:
-                    type: string
-                    example: atque
-                  remote_url:
-                    type: string
-                    example: https://github.com/mdlayher/wireguard_exporter.git
-                  updated_at:
-                    type: string
-                    example: "2023-02-22T04:59:45.723021Z"
-              examples:
-                add repository:
-                  value:
-                    created_at: "2023-02-22T04:59:45.723021Z"
-                    id: bb42beea-4118-4885-8f88-f291aa0fe790
-                    name: atque
-                    remote_url: https://github.com/mdlayher/wireguard_exporter.git
-                    updated_at: "2023-02-22T04:59:45.723021Z"
-  /api/v1/repository/{id}:
-    get:
-      summary: get repository by ID
-      description: get repository by ID
-      operationId: getRepositoryById
-      responses:
-        "200":
-          description: get repository by ID
-          headers:
-            Content-Length:
-              schema:
-                type: string
-                example: "213"
-            Date:
-              schema:
-                type: string
-                example: Wed, 22 Feb 2023 05:00:34 GMT
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  created_at:
-                    type: string
-                    example: "2023-02-22T04:59:45.723021Z"
-                  id:
-                    type: string
-                    example: bb42beea-4118-4885-8f88-f291aa0fe790
-                  name:
-                    type: string
-                    example: atque
-                  remote_url:
-                    type: string
-                    example: https://github.com/mdlayher/wireguard_exporter.git
-                  updated_at:
-                    type: string
-                    example: "2023-02-22T04:59:45.723021Z"
-              examples:
-                get repository by ID:
-                  value:
-                    created_at: "2023-02-22T04:59:45.723021Z"
-                    id: bb42beea-4118-4885-8f88-f291aa0fe790
-                    name: atque
-                    remote_url: https://github.com/mdlayher/wireguard_exporter.git
-                    updated_at: "2023-02-22T04:59:45.723021Z"
-    put:
-      summary: update repository by ID
-      description: update repository by ID
-      operationId: updateRepositoryById
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                  example: ""
-                remote_url:
-                  type: string
-                  example: github.com//
-            example:
-              name: ""
-              remote_url: github.com//
-      responses:
-        "200":
-          description: update repository by ID
-          headers:
-            Content-Length:
-              schema:
-                type: string
-                example: "0"
-            Date:
-              schema:
-                type: string
-                example: Wed, 22 Feb 2023 05:00:46 GMT
-          content: {}
-    delete:
-      summary: remove repository by ID
-      description: remove repository by ID
-      operationId: removeRepositoryById
-      requestBody:
-        content:
-          text/plain:
-            example: ""
-      responses:
-        "200":
-          description: remove repository by ID
-          headers:
-            Content-Length:
-              schema:
-                type: string
-                example: "0"
-            Date:
-              schema:
-                type: string
-                example: Wed, 22 Feb 2023 05:01:14 GMT
-          content: {}
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          example: dd6bdc0a-6b7b-481b-b012-fcf1b8ecfce3
-  /api/v1/repository/{id}/scan:
-    post:
-      summary: trigger  repository scan by ID
-      description: trigger  repository scan by ID
-      operationId: triggerRepositoryScanById
-      requestBody:
-        content:
-          text/plain:
-            example: ""
-      responses:
-        "200":
-          description: trigger  repository scan by ID
-          headers:
-            Content-Length:
-              schema:
-                type: string
-                example: "338"
-            Date:
-              schema:
-                type: string
-                example: Wed, 22 Feb 2023 04:59:58 GMT
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  created_at:
-                    type: string
-                    example: "2023-02-22T11:59:58.935452+07:00"
-                  enqueue_at:
-                    type: string
-                    example: "2023-02-22T11:59:58.938824+07:00"
-                  finished_at:
-                    type: string
-                    example: "0001-01-01T00:00:00Z"
-                  id:
-                    type: string
-                    example: 62b8b624-4588-4f83-8d61-87bc3a560276
-                  repository_id:
-                    type: string
-                    example: bb42beea-4118-4885-8f88-f291aa0fe790
-                  started_at:
-                    type: string
-                    example: "0001-01-01T00:00:00Z"
-                  status:
-                    type: string
-                    example: enqueued
-                  updated_at:
-                    type: string
-                    example: "2023-02-22T11:59:58.935452+07:00"
-              examples:
-                trigger  repository scan by ID:
-                  value:
-                    created_at: "2023-02-22T11:59:58.935452+07:00"
-                    enqueue_at: "2023-02-22T11:59:58.938824+07:00"
-                    finished_at: "0001-01-01T00:00:00Z"
-                    id: 62b8b624-4588-4f83-8d61-87bc3a560276
-                    repository_id: bb42beea-4118-4885-8f88-f291aa0fe790
-                    started_at: "0001-01-01T00:00:00Z"
-                    status: enqueued
-                    updated_at: "2023-02-22T11:59:58.935452+07:00"
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          example: dd6bdc0a-6b7b-481b-b012-fcf1b8ecfce3
-  /api/v1/repository/{id}/report:
-    get:
-      summary: get report by repository ID
-      description: get report by repository ID
-      operationId: getReportByRepositoryId
-      responses:
-        "200":
-          description: get report by repository ID
-          headers:
-            Date:
-              schema:
-                type: string
-                example: Thu, 23 Feb 2023 15:14:08 GMT
-            Transfer-Encoding:
-              schema:
-                type: string
-                example: chunked
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  created_at:
-                    type: string
-                    example: "2023-02-23T15:14:05.673514Z"
-                  enqueue_at:
-                    type: string
-                    example: "2023-02-23T15:14:05.6767Z"
-                  findings:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        location:
-                          type: object
-                          properties:
-                            path:
-                              type: string
-                              example: /parse.go
-                            position:
-                              type: object
-                              properties:
-                                begin:
-                                  type: object
-                                  properties:
-                                    line:
-                                      type: number
-                                      example: 13
-                        metadata:
-                          type: object
-                          properties:
-                            description:
-                              type: string
-                              example: A secret starts with the prefix public_key
-                            severity:
-                              type: string
-                              example: LOW
-                        ruleId:
-                          type: string
-                          example: G001
-                        type:
-                          type: string
-                          example: sast
-                    example:
-                      - location:
-                          path: /parse.go
-                          position:
-                            begin:
-                              line: 13
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 66
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 67
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 68
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 69
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 70
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 71
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 72
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 73
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 74
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 75
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 76
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 77
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 78
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 37
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 49
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 32
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 39
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 47
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 51
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 32
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 39
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 47
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 51
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                  finished_at:
-                    type: string
-                    example: "2023-02-23T15:14:07.121661Z"
-                  id:
-                    type: string
-                    example: 78589fe4-8365-4c86-9b78-3401ab7f35a3
-                  repository_id:
-                    type: string
-                    example: 1336634e-73f4-438a-ab3a-152d52f071d9
-                  started_at:
-                    type: string
-                    example: "2023-02-23T15:14:05.691266Z"
+                    example: Created user
                   status:
                     type: string
                     example: success
-                  updated_at:
+                  token:
                     type: string
-                    example: "2023-02-23T15:14:07.121661Z"
+                    example: >-
+                      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4MDExMDgsInVzZXJfaWQiOiI3NWIxZjVjYi03MTJkLTQxMjYtYmFjZC1kMjJlNWVhZjAzMGYiLCJ1c2VybmFtZSI6InRlc3QwNSJ9.BDF62foGs07GZ2f-FNfMnnW6HqaTxkmI0xqKdkTVuT8
+                  user:
+                    type: object
+                    properties:
+                      DeletedAt:
+                        nullable: true
+                        example: null
+                      created_at:
+                        type: string
+                        example: '2023-04-27T03:45:08.660779+07:00'
+                      id:
+                        type: string
+                        example: 75b1f5cb-712d-4126-bacd-d22e5eaf030f
+                      password:
+                        type: string
+                        example: >-
+                          $2a$14$VQWEEWcTaE0ZUHoCSkH3reiDW6HvR1WNJmglKWOsx/FStPJiuxIOi
+                      tasks:
+                        nullable: true
+                        example: null
+                      updated_at:
+                        type: string
+                        example: '2023-04-27T03:45:08.660779+07:00'
+                      username:
+                        type: string
+                        example: test05
               examples:
-                get report by repository ID:
+                Create user:
                   value:
-                    created_at: "2023-02-23T15:14:05.673514Z"
-                    enqueue_at: "2023-02-23T15:14:05.6767Z"
-                    findings:
-                      - location:
-                          path: /parse.go
-                          position:
-                            begin:
-                              line: 13
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 66
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 67
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 68
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 69
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 70
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 71
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 72
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 73
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 74
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 75
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 76
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 77
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 78
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 37
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 49
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 32
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 39
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 47
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 51
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 32
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 39
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 47
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                      - location:
-                          path: /parse_test.go
-                          position:
-                            begin:
-                              line: 51
-                        metadata:
-                          description: A secret starts with the prefix public_key
-                          severity: LOW
-                        ruleId: G001
-                        type: sast
-                    finished_at: "2023-02-23T15:14:07.121661Z"
-                    id: 78589fe4-8365-4c86-9b78-3401ab7f35a3
-                    repository_id: 1336634e-73f4-438a-ab3a-152d52f071d9
-                    started_at: "2023-02-23T15:14:05.691266Z"
+                    message: Created user
                     status: success
-                    updated_at: "2023-02-23T15:14:07.121661Z"
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          example: dd6bdc0a-6b7b-481b-b012-fcf1b8ecfce3
-  /health:
-    get:
-      summary: health check
-      description: health check
-      operationId: healthCheck
-      responses:
-        "200":
-          description: health check
+                    token: >-
+                      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4MDExMDgsInVzZXJfaWQiOiI3NWIxZjVjYi03MTJkLTQxMjYtYmFjZC1kMjJlNWVhZjAzMGYiLCJ1c2VybmFtZSI6InRlc3QwNSJ9.BDF62foGs07GZ2f-FNfMnnW6HqaTxkmI0xqKdkTVuT8
+                    user:
+                      DeletedAt: null
+                      created_at: '2023-04-27T03:45:08.660779+07:00'
+                      id: 75b1f5cb-712d-4126-bacd-d22e5eaf030f
+                      password: >-
+                        $2a$14$VQWEEWcTaE0ZUHoCSkH3reiDW6HvR1WNJmglKWOsx/FStPJiuxIOi
+                      tasks: null
+                      updated_at: '2023-04-27T03:45:08.660779+07:00'
+                      username: test05
+        '400':
+          description: Create user
           headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
             Content-Length:
               schema:
                 type: string
-                example: "16"
+                example: '113'
             Date:
               schema:
                 type: string
-                example: Thu, 23 Feb 2023 15:13:24 GMT
+                example: Wed, 26 Apr 2023 20:48:16 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4os470rd0p55dj7g70
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Failed input validation
+                  status:
+                    type: string
+                    example: error
+                  validation_error:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: Password
+                        reason:
+                          type: string
+                          example: min=4
+                    example:
+                      - field: Password
+                        reason: min=4
+              examples:
+                Create user:
+                  value:
+                    message: Failed input validation
+                    status: error
+                    validation_error:
+                      - field: Password
+                        reason: min=4
+        '409':
+          description: Create user with existing username
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '57'
+            Date:
+              schema:
+                type: string
+                example: Sun, 30 Apr 2023 05:14:04 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: 81442391-26ef-4416-9fb6-c717b66265a5
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: duplicated key not allowed
+                  status:
+                    type: string
+                    example: error
+              examples:
+                Create user with existing username:
+                  value:
+                    message: duplicated key not allowed
+                    status: error
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login
+      description: Login
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                password:
+                  type: string
+                  example: '1111'
+                username:
+                  type: string
+                  example: test01
+            example:
+              password: '1111'
+              username: test01
+      responses:
+        '200':
+          description: Login
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '527'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:48:34 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4os8f0rd0p55dj7g7g
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: login success
+                  status:
+                    type: string
+                    example: success
+                  token:
+                    type: string
+                    example: >-
+                      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4MDEzMTQsInVzZXJfaWQiOiI1YmRlMjIxMy0xMjExLTQ1MDEtYjY2Yi0wOWE3NWI0MGMxMWYiLCJ1c2VybmFtZSI6InRlc3QwMSJ9.-1IYuB53Y3jyCwZ0lGNfEL4xdt3tpQTJrb-8wZH3zlY
+                  user:
+                    type: object
+                    properties:
+                      DeletedAt:
+                        nullable: true
+                        example: null
+                      created_at:
+                        type: string
+                        example: '2023-04-27T03:44:42.843778+07:00'
+                      id:
+                        type: string
+                        example: 5bde2213-1211-4501-b66b-09a75b40c11f
+                      password:
+                        type: string
+                        example: >-
+                          $2a$14$xhrlRSxbCgGi5Hfj7b/i1e6/UfQoXiY4/2mllEkzybY18cNo2qdbG
+                      tasks:
+                        nullable: true
+                        example: null
+                      updated_at:
+                        type: string
+                        example: '2023-04-27T03:44:42.843778+07:00'
+                      username:
+                        type: string
+                        example: test01
+              examples:
+                Login:
+                  value:
+                    message: login success
+                    status: success
+                    token: >-
+                      eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODI4MDEzMTQsInVzZXJfaWQiOiI1YmRlMjIxMy0xMjExLTQ1MDEtYjY2Yi0wOWE3NWI0MGMxMWYiLCJ1c2VybmFtZSI6InRlc3QwMSJ9.-1IYuB53Y3jyCwZ0lGNfEL4xdt3tpQTJrb-8wZH3zlY
+                    user:
+                      DeletedAt: null
+                      created_at: '2023-04-27T03:44:42.843778+07:00'
+                      id: 5bde2213-1211-4501-b66b-09a75b40c11f
+                      password: >-
+                        $2a$14$xhrlRSxbCgGi5Hfj7b/i1e6/UfQoXiY4/2mllEkzybY18cNo2qdbG
+                      tasks: null
+                      updated_at: '2023-04-27T03:44:42.843778+07:00'
+                      username: test01
+        '400':
+          description: Login
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '151'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:49:00 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4osf70rd0p55dj7g80
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Failed input validation
+                  status:
+                    type: string
+                    example: error
+                  validation_error:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: Username
+                        reason:
+                          type: string
+                          example: min=4
+                    example:
+                      - field: Username
+                        reason: min=4
+                      - field: Password
+                        reason: min=4
+              examples:
+                Login:
+                  value:
+                    message: Failed input validation
+                    status: error
+                    validation_error:
+                      - field: Username
+                        reason: min=4
+                      - field: Password
+                        reason: min=4
+        '401':
+          description: Login
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '43'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:49:16 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4osj70rd0p55dj7g8g
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+                  status:
+                    type: string
+                    example: error
+              examples:
+                Login:
+                  value:
+                    message: Unauthorized
+                    status: error
+  /api/tasks:
+    get:
+      tags:
+        - Tasks
+      summary: Get all tasks
+      description: Get all tasks
+      operationId: getAllTasks
+      responses:
+        '200':
+          description: Get all tasks
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '738'
+            Date:
+              schema:
+                type: string
+                example: Sun, 30 Apr 2023 05:15:25 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: 357b9557-4f5a-4242-8972-d2003a52d425
+            Vary:
+              schema:
+                type: string
+                example: Origin
           content:
             application/json:
               schema:
@@ -949,9 +442,607 @@ paths:
                 properties:
                   status:
                     type: string
-                    example: ok
+                    example: success
+                  tasks:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        completed:
+                          type: boolean
+                          example: false
+                        completed_at:
+                          type: string
+                          example: '0001-01-01T00:00:00Z'
+                        created_at:
+                          type: string
+                          example: '2023-04-30T05:15:23.412833Z'
+                        deleted_at:
+                          nullable: true
+                          example: null
+                        id:
+                          type: string
+                          example: d82e688f-9091-44f2-87eb-d73b3d76648d
+                        message:
+                          type: string
+                          example: >-
+                            The TCP matrix is down, navigate the open-source
+                            capacitor so we can override the TCP interface!
+                        updated_at:
+                          type: string
+                          example: '2023-04-30T05:15:23.412833Z'
+                        user_id:
+                          type: string
+                          example: 9ad46ab1-1a77-4ab2-9868-b1bdfe02c137
+                    example:
+                      - completed: false
+                        completed_at: '0001-01-01T00:00:00Z'
+                        created_at: '2023-04-30T05:15:23.412833Z'
+                        deleted_at: null
+                        id: d82e688f-9091-44f2-87eb-d73b3d76648d
+                        message: >-
+                          The TCP matrix is down, navigate the open-source
+                          capacitor so we can override the TCP interface!
+                        updated_at: '2023-04-30T05:15:23.412833Z'
+                        user_id: 9ad46ab1-1a77-4ab2-9868-b1bdfe02c137
+                      - completed: false
+                        completed_at: '0001-01-01T00:00:00Z'
+                        created_at: '2023-04-30T05:15:21.761935Z'
+                        deleted_at: null
+                        id: 8ff497be-f633-4f51-a909-c72093e73816
+                        message: >-
+                          Use the back-end JSON capacitor, then you can navigate
+                          the optical protocol!
+                        updated_at: '2023-04-30T05:15:21.761935Z'
+                        user_id: 9ad46ab1-1a77-4ab2-9868-b1bdfe02c137
               examples:
-                health check:
+                Get all tasks:
                   value:
-                    status: ok
-tags: []
+                    status: success
+                    tasks:
+                      - completed: false
+                        completed_at: '0001-01-01T00:00:00Z'
+                        created_at: '2023-04-30T05:15:23.412833Z'
+                        deleted_at: null
+                        id: d82e688f-9091-44f2-87eb-d73b3d76648d
+                        message: >-
+                          The TCP matrix is down, navigate the open-source
+                          capacitor so we can override the TCP interface!
+                        updated_at: '2023-04-30T05:15:23.412833Z'
+                        user_id: 9ad46ab1-1a77-4ab2-9868-b1bdfe02c137
+                      - completed: false
+                        completed_at: '0001-01-01T00:00:00Z'
+                        created_at: '2023-04-30T05:15:21.761935Z'
+                        deleted_at: null
+                        id: 8ff497be-f633-4f51-a909-c72093e73816
+                        message: >-
+                          Use the back-end JSON capacitor, then you can navigate
+                          the optical protocol!
+                        updated_at: '2023-04-30T05:15:21.761935Z'
+                        user_id: 9ad46ab1-1a77-4ab2-9868-b1bdfe02c137
+        '401':
+          description: Get all tasks without authorization
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '53'
+            Date:
+              schema:
+                type: string
+                example: Sun, 30 Apr 2023 05:16:00 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: 2f086ae2-4d39-48eb-9643-3fb43ef09e3a
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: invalid or expired JWT
+                  status:
+                    type: string
+                    example: error
+              examples:
+                Get all tasks without authorization:
+                  value:
+                    message: invalid or expired JWT
+                    status: error
+    post:
+      tags:
+        - Tasks
+      summary: Create task
+      description: Create task
+      operationId: createTask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: ''
+            example:
+              message: ''
+      responses:
+        '200':
+          description: Create task
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '330'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:50:01 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4osuf0rd0p55dj7gag
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: task created
+                  status:
+                    type: string
+                    example: success
+                  task:
+                    type: object
+                    properties:
+                      completed:
+                        type: boolean
+                        example: false
+                      completed_at:
+                        type: string
+                        example: '0001-01-01T00:00:00Z'
+                      created_at:
+                        type: string
+                        example: '2023-04-27T03:50:01.646019+07:00'
+                      deleted_at:
+                        nullable: true
+                        example: null
+                      id:
+                        type: string
+                        example: c245040a-5381-4c84-ac54-23b16c45c81c
+                      message:
+                        type: string
+                        example: ''
+                      updated_at:
+                        type: string
+                        example: '2023-04-27T03:50:01.646019+07:00'
+                      user_id:
+                        type: string
+                        example: 5bde2213-1211-4501-b66b-09a75b40c11f
+              examples:
+                Create task:
+                  value:
+                    message: task created
+                    status: success
+                    task:
+                      completed: false
+                      completed_at: '0001-01-01T00:00:00Z'
+                      created_at: '2023-04-27T03:50:01.646019+07:00'
+                      deleted_at: null
+                      id: c245040a-5381-4c84-ac54-23b16c45c81c
+                      message: ''
+                      updated_at: '2023-04-27T03:50:01.646019+07:00'
+                      user_id: 5bde2213-1211-4501-b66b-09a75b40c11f
+        '400':
+          description: Create task with validation error 2
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '114'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:51:03 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4ote70rd0p55dj7gbg
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Failed input validation
+                  status:
+                    type: string
+                    example: error
+                  validation_error:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: Message
+                        reason:
+                          type: string
+                          example: max=120
+                    example:
+                      - field: Message
+                        reason: max=120
+              examples:
+                Create task with validation error 2:
+                  value:
+                    message: Failed input validation
+                    status: error
+                    validation_error:
+                      - field: Message
+                        reason: max=120
+  /api/tasks/{task_id}:
+    put:
+      tags:
+        - Tasks
+      summary: Update a task
+      description: Update a task
+      operationId: updateATask
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                completed:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: ''
+            example:
+              completed: true
+              message: ''
+      responses:
+        '200':
+          description: Update a task
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '398'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:51:46 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4otov0rd0p55dj7gdg
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: task updated
+                  status:
+                    type: string
+                    example: success
+                  task:
+                    type: object
+                    properties:
+                      completed:
+                        type: boolean
+                        example: true
+                      completed_at:
+                        type: string
+                        example: '0001-01-01T00:00:00Z'
+                      created_at:
+                        type: string
+                        example: '2023-04-27T03:51:23.926139+07:00'
+                      deleted_at:
+                        nullable: true
+                        example: null
+                      id:
+                        type: string
+                        example: f7b63290-f884-4a1d-97e0-9175fc134e83
+                      message:
+                        type: string
+                        example: >-
+                          Use the virtual IB array, then you can quantify the
+                          solid state card!
+                      updated_at:
+                        type: string
+                        example: '2023-04-27T03:51:47.363191+07:00'
+                      user_id:
+                        type: string
+                        example: 5bde2213-1211-4501-b66b-09a75b40c11f
+              examples:
+                Update a task:
+                  value:
+                    message: task updated
+                    status: success
+                    task:
+                      completed: true
+                      completed_at: '0001-01-01T00:00:00Z'
+                      created_at: '2023-04-27T03:51:23.926139+07:00'
+                      deleted_at: null
+                      id: f7b63290-f884-4a1d-97e0-9175fc134e83
+                      message: >-
+                        Use the virtual IB array, then you can quantify the
+                        solid state card!
+                      updated_at: '2023-04-27T03:51:47.363191+07:00'
+                      user_id: 5bde2213-1211-4501-b66b-09a75b40c11f
+        '400':
+          description: Update a task with message validation error
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '112'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:52:08 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4otuf0rd0p55dj7ge0
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Failed input validation
+                  status:
+                    type: string
+                    example: error
+                  validation_error:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        field:
+                          type: string
+                          example: Message
+                        reason:
+                          type: string
+                          example: min=1
+                    example:
+                      - field: Message
+                        reason: min=1
+              examples:
+                Update a task with message validation error:
+                  value:
+                    message: Failed input validation
+                    status: error
+                    validation_error:
+                      - field: Message
+                        reason: min=1
+    delete:
+      tags:
+        - Tasks
+      summary: Delete a task
+      description: Delete a task
+      operationId: deleteATask
+      responses:
+        '200':
+          description: Delete a task complete
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '433'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:52:26 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4ou2n0rd0p55dj7geg
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: task deleted
+                  status:
+                    type: string
+                    example: success
+                  task:
+                    type: object
+                    properties:
+                      completed:
+                        type: boolean
+                        example: true
+                      completed_at:
+                        type: string
+                        example: '0001-01-01T06:42:04+06:42'
+                      created_at:
+                        type: string
+                        example: '2023-04-27T03:51:23.926139+07:00'
+                      deleted_at:
+                        type: string
+                        example: '2023-04-27T03:52:26.689946+07:00'
+                      id:
+                        type: string
+                        example: f7b63290-f884-4a1d-97e0-9175fc134e83
+                      message:
+                        type: string
+                        example: >-
+                          Use the virtual IB array, then you can quantify the
+                          solid state card!
+                      updated_at:
+                        type: string
+                        example: '2023-04-27T03:51:47.363191+07:00'
+                      user_id:
+                        type: string
+                        example: 5bde2213-1211-4501-b66b-09a75b40c11f
+              examples:
+                Delete a task complete:
+                  value:
+                    message: task deleted
+                    status: success
+                    task:
+                      completed: true
+                      completed_at: '0001-01-01T06:42:04+06:42'
+                      created_at: '2023-04-27T03:51:23.926139+07:00'
+                      deleted_at: '2023-04-27T03:52:26.689946+07:00'
+                      id: f7b63290-f884-4a1d-97e0-9175fc134e83
+                      message: >-
+                        Use the virtual IB array, then you can quantify the
+                        solid state card!
+                      updated_at: '2023-04-27T03:51:47.363191+07:00'
+                      user_id: 5bde2213-1211-4501-b66b-09a75b40c11f
+        '401':
+          description: Delete a task without authorization
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '43'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:52:33 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4ou4n0rd0p55dj7gf0
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Unauthorized
+                  status:
+                    type: string
+                    example: error
+              examples:
+                Delete a task without authorization:
+                  value:
+                    message: Unauthorized
+                    status: error
+    parameters:
+      - name: task_id
+        in: path
+        required: true
+        schema:
+          type: string
+  /api/health:
+    get:
+      summary: Health check
+      description: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Health check
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: '*'
+            Content-Length:
+              schema:
+                type: string
+                example: '47'
+            Date:
+              schema:
+                type: string
+                example: Wed, 26 Apr 2023 20:53:41 GMT
+            Request-Id:
+              schema:
+                type: string
+                example: ch4ouln0rd0p55dj7gfg
+            Vary:
+              schema:
+                type: string
+                example: Origin
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: API is running
+                  status:
+                    type: string
+                    example: success
+              examples:
+                Health check:
+                  value:
+                    message: API is running
+                    status: success
+tags:
+  - name: User
+  - name: Auth
+  - name: Tasks

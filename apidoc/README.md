@@ -19,11 +19,10 @@
 }
 ```
 
-### 🔑 Authentication bearer
+### 🔑 Authentication noauth
 
-| Param | value                                                                                                                                                | Type   |
-| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------- | ------ |
-| token | eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiZXhwIjoxNTkyNDE1NTIwLCJpZGVudGl0eSI6ImVuZGVyIn0.B9iKWiVn2TMF7uXLLq6t2axOxuvXFhG_WMMYsDREeDY | string |
+| Param | value | Type |
+| ----- | ----- | ---- |
 
 ### Response: 200
 
@@ -150,7 +149,28 @@
 ```json
 {
   "status": "success",
-  "tasks": []
+  "tasks": [
+    {
+      "id": "d82e688f-9091-44f2-87eb-d73b3d76648d",
+      "created_at": "2023-04-30T05:15:23.412833Z",
+      "updated_at": "2023-04-30T05:15:23.412833Z",
+      "deleted_at": null,
+      "message": "The TCP matrix is down, navigate the open-source capacitor so we can override the TCP interface!",
+      "completed": false,
+      "completed_at": "0001-01-01T00:00:00Z",
+      "user_id": "9ad46ab1-1a77-4ab2-9868-b1bdfe02c137"
+    },
+    {
+      "id": "8ff497be-f633-4f51-a909-c72093e73816",
+      "created_at": "2023-04-30T05:15:21.761935Z",
+      "updated_at": "2023-04-30T05:15:21.761935Z",
+      "deleted_at": null,
+      "message": "Use the back-end JSON capacitor, then you can navigate the optical protocol!",
+      "completed": false,
+      "completed_at": "0001-01-01T00:00:00Z",
+      "user_id": "9ad46ab1-1a77-4ab2-9868-b1bdfe02c137"
+    }
+  ]
 }
 ```
 

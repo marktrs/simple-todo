@@ -176,22 +176,22 @@
                     {
                       "completed": false,
                       "completed_at": "0001-01-01T00:00:00Z",
-                      "created_at": "2023-04-27T03:51:23.926139+07:00",
+                      "created_at": "2023-04-30T05:15:23.412833Z",
                       "deleted_at": null,
-                      "id": "f7b63290-f884-4a1d-97e0-9175fc134e83",
-                      "message": "",
-                      "updated_at": "2023-04-27T03:51:23.926139+07:00",
-                      "user_id": "5bde2213-1211-4501-b66b-09a75b40c11f"
+                      "id": "d82e688f-9091-44f2-87eb-d73b3d76648d",
+                      "message": "The TCP matrix is down, navigate the open-source capacitor so we can override the TCP interface!",
+                      "updated_at": "2023-04-30T05:15:23.412833Z",
+                      "user_id": "9ad46ab1-1a77-4ab2-9868-b1bdfe02c137"
                     },
                     {
                       "completed": false,
                       "completed_at": "0001-01-01T00:00:00Z",
-                      "created_at": "2023-04-27T03:50:01.646019+07:00",
+                      "created_at": "2023-04-30T05:15:21.761935Z",
                       "deleted_at": null,
-                      "id": "c245040a-5381-4c84-ac54-23b16c45c81c",
-                      "message": "",
-                      "updated_at": "2023-04-27T03:50:01.646019+07:00",
-                      "user_id": "5bde2213-1211-4501-b66b-09a75b40c11f"
+                      "id": "8ff497be-f633-4f51-a909-c72093e73816",
+                      "message": "Use the back-end JSON capacitor, then you can navigate the optical protocol!",
+                      "updated_at": "2023-04-30T05:15:21.761935Z",
+                      "user_id": "9ad46ab1-1a77-4ab2-9868-b1bdfe02c137"
                     }
                   ],
                   "items": {
@@ -202,21 +202,24 @@
                         "type": "string"
                       },
                       "created_at": {
-                        "example": "2023-04-27T03:51:23.926139+07:00",
+                        "example": "2023-04-30T05:15:23.412833Z",
                         "type": "string"
                       },
                       "deleted_at": { "example": null, "x-nullable": true },
                       "id": {
-                        "example": "f7b63290-f884-4a1d-97e0-9175fc134e83",
+                        "example": "d82e688f-9091-44f2-87eb-d73b3d76648d",
                         "type": "string"
                       },
-                      "message": { "example": "", "type": "string" },
+                      "message": {
+                        "example": "The TCP matrix is down, navigate the open-source capacitor so we can override the TCP interface!",
+                        "type": "string"
+                      },
                       "updated_at": {
-                        "example": "2023-04-27T03:51:23.926139+07:00",
+                        "example": "2023-04-30T05:15:23.412833Z",
                         "type": "string"
                       },
                       "user_id": {
-                        "example": "5bde2213-1211-4501-b66b-09a75b40c11f",
+                        "example": "9ad46ab1-1a77-4ab2-9868-b1bdfe02c137",
                         "type": "string"
                       }
                     },
@@ -224,6 +227,26 @@
                   },
                   "type": "array"
                 }
+              },
+              "type": "object"
+            }
+          },
+          "401": {
+            "description": "Get all tasks without authorization",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "example": "invalid or expired JWT",
+                  "type": "string"
+                },
+                "status": { "example": "error", "type": "string" }
               },
               "type": "object"
             }
@@ -294,7 +317,7 @@
             }
           },
           "400": {
-            "description": "Create task",
+            "description": "Create task with validation error 2",
             "headers": {
               "Access-Control-Allow-Origin": { "type": "string" },
               "Content-Length": { "type": "string" },
@@ -340,7 +363,7 @@
         "parameters": [],
         "responses": {
           "200": {
-            "description": "Delete a task",
+            "description": "Delete a task complete",
             "headers": {
               "Access-Control-Allow-Origin": { "type": "string" },
               "Content-Length": { "type": "string" },
@@ -391,7 +414,7 @@
             }
           },
           "401": {
-            "description": "Delete a task",
+            "description": "Delete a task without authorization",
             "headers": {
               "Access-Control-Allow-Origin": { "type": "string" },
               "Content-Length": { "type": "string" },
@@ -479,7 +502,7 @@
             }
           },
           "400": {
-            "description": "Update a task",
+            "description": "Update a task with message validation error",
             "headers": {
               "Access-Control-Allow-Origin": { "type": "string" },
               "Content-Length": { "type": "string" },
@@ -606,6 +629,26 @@
                   },
                   "type": "array"
                 }
+              },
+              "type": "object"
+            }
+          },
+          "409": {
+            "description": "Create user with existing username",
+            "headers": {
+              "Access-Control-Allow-Origin": { "type": "string" },
+              "Content-Length": { "type": "string" },
+              "Date": { "type": "string" },
+              "Request-Id": { "type": "string" },
+              "Vary": { "type": "string" }
+            },
+            "schema": {
+              "properties": {
+                "message": {
+                  "example": "duplicated key not allowed",
+                  "type": "string"
+                },
+                "status": { "example": "error", "type": "string" }
               },
               "type": "object"
             }
